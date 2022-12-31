@@ -3,14 +3,24 @@ import React from "react";
 import { useState } from "react";
 
 const Form = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+  const [formState, setFormState] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormState((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // submit the form here
-    alert("sent");
+    alert(JSON.stringify(formState));
   };
 
   return (
@@ -31,6 +41,8 @@ const Form = () => {
             id="inline-full-name"
             type="text"
             placeholder="Jane Doe"
+            name="name"
+            onChange={handleInputChange}
           />
         </div>
       </div>
@@ -49,6 +61,8 @@ const Form = () => {
             id="inline-email"
             type="email"
             placeholder="jane@example.com"
+            onChange={handleInputChange}
+            name="email"
           />
         </div>
       </div>
@@ -67,6 +81,8 @@ const Form = () => {
             id="inline-password"
             type="password"
             placeholder="******************"
+            name="password"
+            onChange={handleInputChange}
           />
         </div>
       </div>
