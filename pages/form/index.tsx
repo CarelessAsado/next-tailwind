@@ -14,7 +14,7 @@ const Form = () => {
   };
 
   return (
-    <form className="w-full max-w-sm">
+    <form className="w-full max-w-sm " onSubmit={handleSubmit}>
       <Link href={"/"}>HOME</Link>
       <div className="md:flex md:items-center mb-6">
         <div className="md:w-1/3">
@@ -70,6 +70,7 @@ const Form = () => {
           />
         </div>
       </div>
+      <button>Enviar</button>
     </form>
   );
 };
