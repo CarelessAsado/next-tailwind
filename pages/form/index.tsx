@@ -15,7 +15,7 @@ const Form = () => {
 
   return (
     <form className="w-full max-w-sm">
-      <Link href={"/"} />
+      <Link href={"/"}>HOME</Link>
       <div className="md:flex md:items-center mb-6">
         <div className="md:w-1/3">
           <label
