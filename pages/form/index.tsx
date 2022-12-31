@@ -42,6 +42,7 @@ const Form = () => {
             type="text"
             placeholder="Jane Doe"
             name="name"
+            value={formState.name}
             onChange={handleInputChange}
           />
         </div>
@@ -62,6 +63,7 @@ const Form = () => {
             type="email"
             placeholder="jane@example.com"
             onChange={handleInputChange}
+            value={formState.email}
             name="email"
           />
         </div>
@@ -82,6 +84,7 @@ const Form = () => {
             type="password"
             placeholder="******************"
             name="password"
+            value={formState.password}
             onChange={handleInputChange}
           />
         </div>
