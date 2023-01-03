@@ -2,14 +2,14 @@ import Link from "next/link";
 import React, { useEffect } from "react";
 import { useState } from "react";
 
-const Form = ({ hello }: { hello: { name: string } }) => {
+const Form = ({ serverData }: { serverData: { name: string } }) => {
   const [formState, setFormState] = useState({
     name: "",
     email: "",
     password: "",
   });
 
-  console.log(hello.name, 999);
+  console.log(serverData.name, 999);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
