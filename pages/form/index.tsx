@@ -1,13 +1,15 @@
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 
-const Form = () => {
+const Form = ({ hello }: { hello: { name: string } }) => {
   const [formState, setFormState] = useState({
     name: "",
     email: "",
     password: "",
   });
+
+  console.log(hello.name, 999);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -17,11 +19,32 @@ const Form = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // submit the form here
     alert(JSON.stringify(formState));
+
+    //switch to axios
+    const resp = await fetch("/api/hello", {
+      body: JSON.stringify(formState),
+      method: "POST",
+    });
+
+    const value = await resp.json();
+    console.log(value, 777);
   };
+
+  const [data, setData] = useState(null);
+
+  /*   useEffect(() => {
+    async function fetchData() {
+      const res = await fetch("/api/hello");
+      const data = await res.json();
+      setData(data);
+      console.log(data);
+    }
+    fetchData();
+  }, []); */
 
   return (
     <form className="w-full max-w-sm " onSubmit={handleSubmit}>
@@ -94,4 +117,14 @@ const Form = () => {
   );
 };
 
+//get API call logic directly into getServerSideProps, as recommended by Next docs
+export async function getServerSideProps() {
+  const res = await fetch("http://localhost:3000" + "/api/hello");
+  const data = await res.json();
+
+  //this occurs in the backend
+  /* console.log(data, 777, "back"); */
+
+  return { props: { serverData: data } };
+}
 export default Form;
