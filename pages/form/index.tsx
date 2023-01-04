@@ -1,15 +1,21 @@
+import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import React, { useEffect } from "react";
 import { useState } from "react";
+import { ITask } from "../../model/Task";
+import dbConnect from "../../utils/dbConnect";
+import { getAllTasks } from "../api/tasks.controller";
 
-const Form = ({ serverData }: { serverData: { name: string } }) => {
+type PageProps = { serverData: ITask[] };
+
+const Form = ({ serverData }: PageProps) => {
   const [formState, setFormState] = useState({
     name: "",
     email: "",
     password: "",
   });
 
-  console.log(serverData.name, 999);
+  console.log(serverData);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -25,7 +31,7 @@ const Form = ({ serverData }: { serverData: { name: string } }) => {
     alert(JSON.stringify(formState));
 
     //switch to axios
-    const resp = await fetch("/api/hello", {
+    const resp = await fetch("/api/tasks.controller", {
       body: JSON.stringify(formState),
       method: "POST",
     });
@@ -35,16 +41,6 @@ const Form = ({ serverData }: { serverData: { name: string } }) => {
   };
 
   const [data, setData] = useState(null);
-
-  /*   useEffect(() => {
-    async function fetchData() {
-      const res = await fetch("/api/hello");
-      const data = await res.json();
-      setData(data);
-      console.log(data);
-    }
-    fetchData();
-  }, []); */
 
   return (
     <form className="w-full max-w-sm " onSubmit={handleSubmit}>
@@ -117,14 +113,19 @@ const Form = ({ serverData }: { serverData: { name: string } }) => {
   );
 };
 
-//get API call logic directly into getServerSideProps, as recommended by Next docs
+//dont fetch your local API inside your getServerSideProps, its like calling your own house from chez toi
+//getServerSideProps is called only on first mount
 export async function getServerSideProps() {
-  const res = await fetch("http://localhost:3000" + "/api/hello");
-  const data = await res.json();
+  await dbConnect();
+  const tasks = await getAllTasks();
+  //if I dont serialize the mongoose object, Next will throw an error
 
-  //this occurs in the backend
-  /* console.log(data, 777, "back"); */
+  //TO OBJECT: method does not recursively convert all nested documents and arrays to plain objects. If you have nested documents or arrays that you need to convert to plain objects, you may need to use additional logic to traverse and convert those nested objects as needed (_id property its an object, so it will throw an Error in next with just this method).
+  /*   const serializableTasks = tasks.map((task) => task.toObject<ITask>()); */
+  const serializableTasks = JSON.parse(JSON.stringify(tasks));
 
-  return { props: { serverData: data } };
+  const _props: PageProps = { serverData: serializableTasks };
+  console.log("getSERVER SIDE PROPS CALLED", serializableTasks);
+  return { props: _props };
 }
 export default Form;

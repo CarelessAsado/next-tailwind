@@ -1,6 +1,11 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
+import Task, { ITask } from "../../model/Task";
 import dbConnect from "../../utils/dbConnect";
+
+export const getAllTasks = async () => {
+  return Task.find<ITask>();
+};
 
 // https://nextjs.org/docs/api-routes/introduction
 //la new doc explica poco y nada, explicitamente te refiere a la old doc
@@ -14,14 +19,16 @@ export default async function handler(
   console.log("estamos en API HANDLER EN /HELLO, con method: " + req.method);
   switch (req.method) {
     case "GET":
-      successfulRes.json({ name: "John Doe" });
+      successfulRes.json({ data: await getAllTasks() });
       break;
 
     case "POST":
       console.log("estamos en POST");
-      //delete after we switch to axios
-      console.log(JSON.parse(req.body));
-      res.status(201).json("Created");
+      console.log(req.body);
+      const savedTask = await new Task({
+        value: JSON.parse(req.body).name,
+      }).save();
+      res.status(201).json(savedTask);
       break;
     default:
       break;
