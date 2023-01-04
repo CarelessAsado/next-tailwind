@@ -2,12 +2,13 @@ import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { ITask } from "model/Task";
+import { ITask, ITaskObject } from "model/Task";
 import dbConnect from "utils/dbConnect";
 import { getAllTasks } from "../api/tasks.controller";
 import { SingleTask } from "components/SingleTask";
+import { BACKEND_URL_API, ROUTER } from "constants/constants";
 
-type PageProps = { serverData: ITask[] };
+type PageProps = { serverData: ITaskObject[] };
 
 const Form = ({ serverData }: PageProps) => {
   const [formState, setFormState] = useState({
@@ -30,7 +31,7 @@ const Form = ({ serverData }: PageProps) => {
     alert(JSON.stringify(formState));
 
     //switch to axios
-    const resp = await fetch("/api/tasks.controller", {
+    const resp = await fetch(BACKEND_URL_API + ROUTER.tasksControllerAPI, {
       body: JSON.stringify(formState),
       method: "POST",
     });
@@ -112,7 +113,7 @@ const Form = ({ serverData }: PageProps) => {
       </form>
 
       {data.map((task) => {
-        return <SingleTask task={task} />;
+        return <SingleTask task={task} key={task._id} />;
       })}
     </>
   );

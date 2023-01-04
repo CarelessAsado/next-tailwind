@@ -1,15 +1,22 @@
 import { ITask } from "model/Task";
 import React, { useState } from "react";
-
+import * as taskAPI from "clientAPI/taskAPI";
 export const SingleTask = ({ task }: { task: ITask }) => {
   const [checked, setChecked] = useState(task.checked);
 
-  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setChecked(event.target.checked);
+  const handleCheckboxChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { data } = await taskAPI.updateTask({
+      ...task,
+      checked: event.target.checked,
+    });
+    console.log(data, "SAVED, update REDUX STATE");
+    setChecked(data.checked);
   };
 
   return (
-    <div>
+    <div className={`flex gap-5 ${checked && "text-slate-400 line-through"}`}>
       <div>{task.value}</div>
       <input
         type="checkbox"

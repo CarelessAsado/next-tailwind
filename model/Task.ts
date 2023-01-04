@@ -6,8 +6,13 @@ export interface ITask extends mongoose.Document {
   createdAt: Date;
   updatedAt: Date;
 }
+//maybe try to get the return type of .lean or .toObject
+export type ITaskObject = Pick<
+  ITask,
+  "_id" | Exclude<keyof ITask, keyof mongoose.Document>
+>;
 
-const taskSchema = new mongoose.Schema(
+const taskSchema = new mongoose.Schema<ITask>(
   {
     value: {
       type: String,

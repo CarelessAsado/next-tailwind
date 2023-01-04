@@ -32,6 +32,21 @@ export default async function handler(
       }).save();
       res.status(201).json(savedTask);
       break;
+    case "PUT":
+      console.log(req.body);
+      const { value, checked, _id } = req.body;
+      const found = await Task.findById<ITask>(_id);
+      if (!found) {
+        return res.status(404);
+      }
+      found.value = value;
+      found.checked = checked;
+
+      const saved = await found.save();
+
+      console.log(saved, 888);
+      res.status(201).json(saved);
+      break;
     default:
       break;
   }
