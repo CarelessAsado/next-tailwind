@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import Task, { ITask } from "../../model/Task";
-import dbConnect from "../../utils/dbConnect";
+import Task, { ITask } from "model/Task";
+import dbConnect from "utils/dbConnect";
 
 export const getAllTasks = async () => {
   return Task.find<ITask>();
@@ -16,7 +16,9 @@ export default async function handler(
   await dbConnect();
 
   const successfulRes = res.status(200);
-  console.log("estamos en API HANDLER EN /HELLO, con method: " + req.method);
+  console.log(
+    "estamos en API HANDLER EN /task.controller, con method: " + req.method
+  );
   switch (req.method) {
     case "GET":
       successfulRes.json({ data: await getAllTasks() });

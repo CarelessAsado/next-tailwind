@@ -2,8 +2,8 @@ import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { ITask } from "../../model/Task";
-import dbConnect from "../../utils/dbConnect";
+import { ITask } from "model/Task";
+import dbConnect from "utils/dbConnect";
 import { getAllTasks } from "../api/tasks.controller";
 
 type PageProps = { serverData: ITask[] };
