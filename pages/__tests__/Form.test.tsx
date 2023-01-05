@@ -30,24 +30,25 @@ describe("Form", () => {
     });
   });
 
-  it("should submit the form", async () => {
-    const { getByLabelText, getByRole } = render(<Form serverData={[]} />);
-    const nameInput = getByLabelText("Full Name");
-    const emailInput = getByLabelText("Email");
-    const passwordInput = getByLabelText("Password");
+  it("should submit the form and display spinner on loading", async () => {
+    jest.useFakeTimers();
+    const mockSubmit = jest.fn(() => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve("");
+        }, 3000);
+      });
+    });
+
+    const { getByRole, findByTestId } = render(
+      <Form serverData={[]} submitForm={mockSubmit} />
+    );
+
     const submitButton = getByRole("button");
 
-    fireEvent.change(nameInput, { target: { value: "John Smith" } });
-    fireEvent.change(emailInput, { target: { value: "john@example.com" } });
-    fireEvent.change(passwordInput, { target: { value: "abc123" } });
     fireEvent.click(submitButton);
-
-    /*    await waitFor(() => {
-      expect(getByText("Form submitted")).toBeDefined();
-    }); */
-    /*  await waitFor(() => expect(fetch).toHaveBeenCalledWith(BACKEND_URL_API + ROUTER.tasksControllerAPI, expect.objectContaining({
-    body: JSON.stringify(formState),
-    method: 'POST'
-  }))); */
+    jest.advanceTimersByTime(2000); // Wait for 2 seconds to allow the spinner to be rendered
+    const spinner = await findByTestId("jest");
+    expect(spinner).not.toBeNull();
   });
 });

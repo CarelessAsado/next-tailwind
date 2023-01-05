@@ -7,10 +7,16 @@ import dbConnect from "utils/dbConnect";
 import { getAllTasks } from "../api/tasks.controller";
 import { SingleTask } from "components/SingleTask";
 import { BACKEND_URL_API, ROUTER } from "constants/constants";
+import Spinner from "components/Spinner";
 
-type PageProps = { serverData: ITaskObject[] };
+type PageProps = {
+  serverData: ITaskObject[];
+  submitForm?: Function;
+};
 
-const Form = ({ serverData }: PageProps) => {
+const Form = ({ serverData, submitForm }: PageProps) => {
+  const [loading, setLoading] = useState(false);
+
   const [formState, setFormState] = useState({
     name: "",
     email: "",
@@ -27,14 +33,22 @@ const Form = ({ serverData }: PageProps) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
+    try {
+      //JEST TEST
+      await submitForm?.();
+      //switch to axios
+      const resp = await fetch(BACKEND_URL_API + ROUTER.tasksControllerAPI, {
+        body: JSON.stringify(formState),
+        method: "POST",
+      });
 
-    //switch to axios
-    const resp = await fetch(BACKEND_URL_API + ROUTER.tasksControllerAPI, {
-      body: JSON.stringify(formState),
-      method: "POST",
-    });
-
-    const value = await resp.json();
+      const value = await resp.json();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const [data, setData] = useState<ITaskObject[]>(serverData);
@@ -106,7 +120,9 @@ const Form = ({ serverData }: PageProps) => {
             />
           </div>
         </div>
-        <button>Enviar</button>
+        <button disabled={loading}>
+          {loading ? <Spinner fz="1 rem" /> : "Enviar"}
+        </button>
       </form>
 
       {data.map((task) => {
