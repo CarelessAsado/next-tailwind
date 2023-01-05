@@ -27,8 +27,6 @@ const Form = ({ serverData }: PageProps) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // submit the form here
-    alert(JSON.stringify(formState));
 
     //switch to axios
     const resp = await fetch(BACKEND_URL_API + ROUTER.tasksControllerAPI, {
@@ -37,7 +35,6 @@ const Form = ({ serverData }: PageProps) => {
     });
 
     const value = await resp.json();
-    console.log(value, 777);
   };
 
   const [data, setData] = useState<ITaskObject[]>(serverData);
