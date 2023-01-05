@@ -2,7 +2,7 @@ import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { ITask, ITaskObject } from "model/Task";
+import { ITaskObject } from "model/Task";
 import dbConnect from "utils/dbConnect";
 import { getAllTasks } from "../api/tasks.controller";
 import { SingleTask } from "components/SingleTask";
@@ -40,7 +40,7 @@ const Form = ({ serverData }: PageProps) => {
     console.log(value, 777);
   };
 
-  const [data, setData] = useState<ITask[]>(serverData);
+  const [data, setData] = useState<ITaskObject[]>(serverData);
 
   return (
     <>

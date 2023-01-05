@@ -1,7 +1,7 @@
-import { ITask } from "model/Task";
+import { ITaskObject } from "model/Task";
 import React, { useState } from "react";
 import * as taskAPI from "clientAPI/taskAPI";
-export const SingleTask = ({ task }: { task: ITask }) => {
+export const SingleTask = ({ task }: { task: ITaskObject }) => {
   const [checked, setChecked] = useState(task.checked);
 
   const handleCheckboxChange = async (
