@@ -1,22 +1,57 @@
 /* import { graphqlSchema } from "model/Task"; */
 import { ApolloServer, gql } from "apollo-server-micro";
 import { NextApiRequest, NextApiResponse } from "next";
+import {
+  ObjectType,
+  Field,
+  ID,
+  Resolver,
+  Query,
+  Arg,
+  buildSchema,
+} from "type-graphql";
+import { getModelForClass, prop } from "@typegoose/typegoose";
+import mongoose, { Types } from "mongoose";
+import dbConnect from "utils/dbConnect";
+const { ObjectId } = Types;
+/* import { getAllTasks } from "./tasks.controller"; */
 
-const typeDefs = gql`
-  type Query {
-    hello: String
+@ObjectType()
+class Task {
+  @Field()
+  @prop()
+  readonly _id!: string;
+
+  @Field()
+  @prop()
+  value!: string;
+
+  @Field()
+  @prop()
+  checked!: boolean;
+}
+
+export const TaskModel = getModelForClass(Task);
+@Resolver(Task)
+export class TaskResolver {
+  @Query(() => [Task])
+  async tasks(): Promise<Task[]> {
+    return await TaskModel.find({});
+    // Return a list of tasks here
   }
-`;
 
-const resolvers = {
-  Query: {
-    hello: () => "Hello, world!",
-  },
-};
+  /*  @Query(() => Task)
+  task(@Arg("taskID") taskID: typeof ObjectId): Task {
+     return TaskModel.findById(taskID);
+  } */
+}
+
+const schema = await buildSchema({
+  resolvers: [TaskResolver],
+});
 
 const server = new ApolloServer({
-  typeDefs,
-  resolvers,
+  schema,
 });
 
 //we need to tell Next.js not to parse the incoming request and let GraphQL handle it for us
@@ -51,37 +86,8 @@ export default async function handler(
     res.end();
     return false;
   }
-
+  await dbConnect();
   await start;
   const apolloHandler = server.createHandler({ path: "/api/graphql" });
   await apolloHandler(req, res);
 }
-
-/* const typeDefs = gql`
-  type Task implements Node {
-    id: ID!
-    value: String!
-    checked: Boolean!
-    createdAt: DateTime!
-  }
-
-  type Query {
-    tasks: [Task]
-    task(id: ID!): Task
-  }
-`; */
-
-/* const resolvers = {
-  Query: {
-         async tasks(root, args, context, info) {
-      // Use the Mongoose Task model to find all tasks
-      const tasks = await Task.find();
-      return tasks;
-    },
-    async task(root, { id }, context, info) {
-      // Use the Mongoose Task model to find a single task by id
-      const task = await Task.findById(id);
-      return task;
-    }, 
-  },
-}; */
