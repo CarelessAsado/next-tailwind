@@ -10,17 +10,21 @@ import {
   Arg,
   buildSchema,
 } from "type-graphql";
+import mongoose from "mongoose";
+
 import { getModelForClass, prop } from "@typegoose/typegoose";
-import mongoose, { Types } from "mongoose";
+
 import dbConnect from "utils/dbConnect";
-const { ObjectId } = Types;
+
 /* import { getAllTasks } from "./tasks.controller"; */
 
+//el _id tecnicamente lo agrega typegoose x default, pero cuando hago un query no me salta
+//le tuve q agregar explicitamente el _id, y, VERY IMPORTANT, add ID en Field
 @ObjectType()
 class Task {
-  @Field()
+  @Field(() => ID)
   @prop()
-  readonly _id!: string;
+  _id!: mongoose.Types.ObjectId;
 
   @Field()
   @prop()
@@ -36,14 +40,19 @@ export const TaskModel = getModelForClass(Task);
 export class TaskResolver {
   @Query(() => [Task])
   async tasks(): Promise<Task[]> {
-    return await TaskModel.find({});
+    return TaskModel.find({});
     // Return a list of tasks here
   }
 
-  /*  @Query(() => Task)
-  task(@Arg("taskID") taskID: typeof ObjectId): Task {
-     return TaskModel.findById(taskID);
-  } */
+  @Query(() => Task)
+  async task(@Arg("taskID") taskID: string): Promise<Task> {
+    const task = await TaskModel.findById(taskID);
+    if (!task) {
+      throw new Error("Invalid task ID");
+    }
+
+    return task;
+  }
 }
 
 const schema = await buildSchema({
