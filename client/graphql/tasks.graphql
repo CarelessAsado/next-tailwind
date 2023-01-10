@@ -1,0 +1,6 @@
+query GetAllTasks {
+  tasks {
+    _id
+    value
+  }
+}

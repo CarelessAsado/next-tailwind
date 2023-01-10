@@ -37,13 +37,14 @@ export class Task {
   checked!: boolean;
 }
 
+//MONGOOSE MODEL
 export const TaskModel = getModelForClass(Task);
+
 @Resolver(Task)
 export class TaskResolver {
   @Query(() => [Task])
   async tasks(): Promise<Task[]> {
     return TaskModel.find({});
-    // Return a list of tasks here
   }
 
   @Query(() => Task)
@@ -52,7 +53,6 @@ export class TaskResolver {
     if (!task) {
       throw new Error("Invalid task ID");
     }
-
     return task;
   }
 }
