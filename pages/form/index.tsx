@@ -7,6 +7,7 @@ import { getAllTasks } from "../api/tasks.controller";
 import { SingleTask } from "components/SingleTask";
 import { BACKEND_URL_API, BACKEND_ROUTER } from "constants/constants";
 import Spinner from "components/Spinner";
+import { Task, useGetAllTasksQuery } from "client/generated/graphql";
 
 type PageProps = {
   serverData: ITaskObject[];
@@ -16,6 +17,12 @@ type PageProps = {
 const Form = ({ serverData, submitForm }: PageProps) => {
   const [loading, setLoading] = useState(false);
 
+  //comes as undefined at first, it console.logs on client AND SERVER the "undefined"
+  //then when data actually arrives it only logs on client
+  const { data: dataQuery } = useGetAllTasksQuery();
+  console.log(dataQuery, 999, "DID USEGETALLTASKSQUERY SUCCEEDED?");
+
+  const [queryData, setQueryData] = useState<Task[]>();
   const [formState, setFormState] = useState({
     name: "",
     email: "",
@@ -53,7 +60,7 @@ const Form = ({ serverData, submitForm }: PageProps) => {
     }
   };
 
-  const [data, setData] = useState<ITaskObject[]>(serverData);
+  /*   const [data, setData] = useState<ITaskObject[]>(serverData); */
 
   return (
     <>
@@ -127,7 +134,7 @@ const Form = ({ serverData, submitForm }: PageProps) => {
         </button>
       </form>
 
-      {data.map((task) => {
+      {dataQuery?.tasks.map((task) => {
         return <SingleTask task={task} key={task._id} />;
       })}
     </>
@@ -136,17 +143,17 @@ const Form = ({ serverData, submitForm }: PageProps) => {
 
 //dont fetch your local API inside your getServerSideProps, its like calling your own house from chez toi
 //getServerSideProps is called only on first mount
-export async function getServerSideProps() {
+/* export async function getServerSideProps() {
   await dbConnect();
   const tasks = await getAllTasks();
   //if I dont serialize the mongoose object, Next will throw an error
 
   //TO OBJECT: method does not recursively convert all nested documents and arrays to plain objects. If you have nested documents or arrays that you need to convert to plain objects, you may need to use additional logic to traverse and convert those nested objects as needed (_id property its an object, so it will throw an Error in next with just this method).
-  /*   const serializableTasks = tasks.map((task) => task.toObject<ITask>()); */
+  //   const serializableTasks = tasks.map((task) => task.toObject<ITask>()); 
   const serializableTasks = JSON.parse(JSON.stringify(tasks));
 
   const _props: PageProps = { serverData: serializableTasks };
   console.log("getSERVER SIDE PROPS CALLED", serializableTasks.length);
   return { props: _props };
-}
+} */
 export default Form;

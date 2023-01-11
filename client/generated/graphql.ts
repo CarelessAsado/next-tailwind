@@ -36,7 +36,14 @@ export type Task = {
 export type GetAllTasksQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllTasksQuery = { __typename?: 'Query', tasks: Array<{ __typename?: 'Task', _id: string, value: string }> };
+export type GetAllTasksQuery = { __typename?: 'Query', tasks: Array<{ __typename?: 'Task', _id: string, value: string, checked: boolean }> };
+
+export type GetSingleTaskQueryVariables = Exact<{
+  taskID: Scalars['String'];
+}>;
+
+
+export type GetSingleTaskQuery = { __typename?: 'Query', task: { __typename?: 'Task', _id: string, value: string, checked: boolean } };
 
 
 export const GetAllTasksDocument = gql`
@@ -44,6 +51,7 @@ export const GetAllTasksDocument = gql`
   tasks {
     _id
     value
+    checked
   }
 }
     `;
@@ -76,4 +84,44 @@ export type GetAllTasksLazyQueryHookResult = ReturnType<typeof useGetAllTasksLaz
 export type GetAllTasksQueryResult = Apollo.QueryResult<GetAllTasksQuery, GetAllTasksQueryVariables>;
 export function refetchGetAllTasksQuery(variables?: GetAllTasksQueryVariables) {
       return { query: GetAllTasksDocument, variables: variables }
+    }
+export const GetSingleTaskDocument = gql`
+    query getSingleTask($taskID: String!) {
+  task(taskID: $taskID) {
+    _id
+    value
+    checked
+  }
+}
+    `;
+
+/**
+ * __useGetSingleTaskQuery__
+ *
+ * To run a query within a React component, call `useGetSingleTaskQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSingleTaskQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSingleTaskQuery({
+ *   variables: {
+ *      taskID: // value for 'taskID'
+ *   },
+ * });
+ */
+export function useGetSingleTaskQuery(baseOptions: Apollo.QueryHookOptions<GetSingleTaskQuery, GetSingleTaskQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSingleTaskQuery, GetSingleTaskQueryVariables>(GetSingleTaskDocument, options);
+      }
+export function useGetSingleTaskLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSingleTaskQuery, GetSingleTaskQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSingleTaskQuery, GetSingleTaskQueryVariables>(GetSingleTaskDocument, options);
+        }
+export type GetSingleTaskQueryHookResult = ReturnType<typeof useGetSingleTaskQuery>;
+export type GetSingleTaskLazyQueryHookResult = ReturnType<typeof useGetSingleTaskLazyQuery>;
+export type GetSingleTaskQueryResult = Apollo.QueryResult<GetSingleTaskQuery, GetSingleTaskQueryVariables>;
+export function refetchGetSingleTaskQuery(variables: GetSingleTaskQueryVariables) {
+      return { query: GetSingleTaskDocument, variables: variables }
     }

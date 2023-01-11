@@ -2,5 +2,14 @@ query GetAllTasks {
   tasks {
     _id
     value
+    checked
+  }
+}
+
+query getSingleTask($taskID: String!) {
+  task(taskID: $taskID) {
+    _id
+    value
+    checked
   }
 }
