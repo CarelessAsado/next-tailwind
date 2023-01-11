@@ -1,61 +1,9 @@
 /* import { graphqlSchema } from "model/Task"; */
 import { ApolloServer, gql } from "apollo-server-micro";
 import { NextApiRequest, NextApiResponse } from "next";
-import {
-  ObjectType,
-  Field,
-  ID,
-  Resolver,
-  Query,
-  Arg,
-  buildSchema,
-} from "type-graphql";
-import mongoose from "mongoose";
-
-import { getModelForClass, prop } from "@typegoose/typegoose";
-
+import { buildSchema } from "type-graphql";
 import dbConnect from "utils/dbConnect";
-
-/* import { getAllTasks } from "./tasks.controller"; */
-
-//el _id tecnicamente lo agrega typegoose x default, pero cuando hago un query no me salta
-//le tuve q agregar explicitamente el _id, y, VERY IMPORTANT, add ID en Field
-//10/1/23 Typegoose infiere el _id x default, no hace falta tampoco PONER PROP, pero Typegraphql sí lo necesita
-//ver dsp de dejar solo string, a ver q pasa
-@ObjectType()
-export class Task {
-  @Field(() => ID)
-  /* @prop() sacarle el prop de Typegoose, xq sino cuando trato de generar una nueva Task, tengo q generar el _id yo.*/
-  _id!: mongoose.Types.ObjectId;
-
-  @Field()
-  @prop()
-  value!: string;
-
-  @Field()
-  @prop()
-  checked!: boolean;
-}
-
-//MONGOOSE MODEL
-export const TaskModel = getModelForClass(Task);
-
-@Resolver(Task)
-export class TaskResolver {
-  @Query(() => [Task])
-  async tasks(): Promise<Task[]> {
-    return TaskModel.find({});
-  }
-
-  @Query(() => Task)
-  async task(@Arg("taskID") taskID: string): Promise<Task> {
-    const task = await TaskModel.findById(taskID);
-    if (!task) {
-      throw new Error("Invalid task ID");
-    }
-    return task;
-  }
-}
+import { TaskResolver } from "server/resolvers/tasks.resolvers";
 
 const schema = await buildSchema({
   resolvers: [TaskResolver],
