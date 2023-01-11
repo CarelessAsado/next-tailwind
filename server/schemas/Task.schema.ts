@@ -6,20 +6,30 @@ import { getModelForClass, prop } from "@typegoose/typegoose";
 //le tuve q agregar explicitamente el _id, y, VERY IMPORTANT, add ID en Field
 //10/1/23 Typegoose infiere el _id x default, no hace falta tampoco PONER PROP, pero Typegraphql sí lo necesita
 //ver dsp de dejar solo string, a ver q pasa
+
+//@prop() sacarle el prop de Typegoose, xq sino cuando trato de generar una nueva Task, tengo q generar el _id yo.
+
 @ObjectType()
 export class Task {
   @Field(() => ID)
-  /* @prop() sacarle el prop de Typegoose, xq sino cuando trato de generar una nueva Task, tengo q generar el _id yo.*/
   _id!: mongoose.Types.ObjectId;
 
-  @Field()
-  @prop()
+  @Field({ nullable: false })
+  @prop({ required: true })
   value!: string;
 
   @Field()
-  @prop()
+  @prop({ default: false })
   checked!: boolean;
+
+  @Field()
+  createdAt!: Date;
+
+  @Field()
+  updatedAt!: Date;
 }
 
 //MONGOOSE MODEL
-export const TaskModel = getModelForClass(Task);
+export const TaskModel = getModelForClass(Task, {
+  schemaOptions: { timestamps: true },
+});

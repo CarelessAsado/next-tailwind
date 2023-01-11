@@ -1,5 +1,11 @@
-import { Resolver, Query, Arg } from "type-graphql";
+import { Resolver, Query, Arg, Mutation, InputType, Field } from "type-graphql";
 import { Task, TaskModel } from "server/schemas/Task.schema";
+
+@InputType()
+class NewTaskInput implements Partial<Task> {
+  @Field()
+  value!: string;
+}
 
 @Resolver(Task)
 export class TaskResolver {
@@ -15,5 +21,18 @@ export class TaskResolver {
       throw new Error("Invalid task ID");
     }
     return task;
+  }
+
+  @Mutation(() => Task)
+  async createTask(
+    @Arg("newTaskINPUT") newTaskINPUT: NewTaskInput
+  ): Promise<Task> {
+    const toBeSavedTask = new TaskModel({
+      value: newTaskINPUT.value,
+    });
+
+    const savedTask = await toBeSavedTask.save();
+
+    return savedTask;
   }
 }

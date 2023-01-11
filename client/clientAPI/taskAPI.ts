@@ -1,9 +1,9 @@
 import { BACKEND_URL_API, BACKEND_ROUTER } from "constants/constants";
-import { ITaskObject } from "model/Task";
 import axios from "axios";
+import { Task } from "client/generated/graphql";
 
-export function updateTask(task: ITaskObject) {
-  return axios.put<ITaskObject>(
+export function updateTask(task: Task) {
+  return axios.put<Task>(
     BACKEND_URL_API + BACKEND_ROUTER.tasksControllerAPI,
     task
   );

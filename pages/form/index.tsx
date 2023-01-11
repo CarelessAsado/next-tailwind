@@ -1,16 +1,19 @@
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import { useState } from "react";
-import { ITaskObject } from "model/Task";
-import dbConnect from "utils/dbConnect";
+import dbConnect from "server/db/dbConnect";
 import { getAllTasks } from "../api/tasks.controller";
 import { SingleTask } from "components/SingleTask";
 import { BACKEND_URL_API, BACKEND_ROUTER } from "constants/constants";
 import Spinner from "components/Spinner";
-import { Task, useGetAllTasksQuery } from "client/generated/graphql";
+import {
+  Task,
+  useCreateTaskMutation,
+  useGetAllTasksQuery,
+} from "client/generated/graphql";
 
 type PageProps = {
-  serverData: ITaskObject[];
+  serverData: Task[];
   submitForm?: Function;
 };
 
@@ -21,7 +24,11 @@ const Form = ({ serverData, submitForm }: PageProps) => {
   //then when data actually arrives it only logs on client
   const { data: dataQuery } = useGetAllTasksQuery();
   console.log(dataQuery, 999, "DID USEGETALLTASKSQUERY SUCCEEDED?");
-
+  const [createTaskMutation, { data, error }] = useCreateTaskMutation({
+    variables: {
+      newTaskINPUT: { value: "TEST NOT DYNAMIC, change afterwards" },
+    },
+  });
   const [queryData, setQueryData] = useState<Task[]>();
   const [formState, setFormState] = useState({
     name: "",
@@ -44,7 +51,7 @@ const Form = ({ serverData, submitForm }: PageProps) => {
       //JEST TEST
       await submitForm?.();
       //switch to axios
-      const resp = await fetch(
+      /*  const resp = await fetch(
         BACKEND_URL_API + BACKEND_ROUTER.tasksControllerAPI,
         {
           body: JSON.stringify(formState),
@@ -52,8 +59,11 @@ const Form = ({ serverData, submitForm }: PageProps) => {
         }
       );
 
-      const value = await resp.json();
+      const value = await resp.json(); */
+      const resp = await createTaskMutation();
+      console.log(resp, 111);
     } catch (error) {
+      console.log(JSON.stringify(error));
       console.log(error);
     } finally {
       setLoading(false);
@@ -133,7 +143,7 @@ const Form = ({ serverData, submitForm }: PageProps) => {
           {loading ? <Spinner fz="1 rem" /> : "Enviar"}
         </button>
       </form>
-
+      <b> {!!error && error.message}</b>
       {dataQuery?.tasks.map((task) => {
         return <SingleTask task={task} key={task._id} />;
       })}

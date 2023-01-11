@@ -1,8 +1,8 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 /* import Task, { ITask } from "model/Task"; */
-import dbConnect from "utils/dbConnect";
-import { Task, TaskModel } from "./graphql";
+import dbConnect from "server/db/dbConnect";
+import { TaskModel } from "server/schemas/Task.schema";
 
 export const getAllTasks = async () => {
   return TaskModel.find();

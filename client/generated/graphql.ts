@@ -13,6 +13,21 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  DateTime: any;
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  createTask: Task;
+};
+
+
+export type MutationCreateTaskArgs = {
+  newTaskINPUT: NewTaskInput;
+};
+
+export type NewTaskInput = {
+  value: Scalars['String'];
 };
 
 export type Query = {
@@ -30,20 +45,29 @@ export type Task = {
   __typename?: 'Task';
   _id: Scalars['ID'];
   checked: Scalars['Boolean'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
   value: Scalars['String'];
 };
 
 export type GetAllTasksQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllTasksQuery = { __typename?: 'Query', tasks: Array<{ __typename?: 'Task', _id: string, value: string, checked: boolean }> };
+export type GetAllTasksQuery = { __typename?: 'Query', tasks: Array<{ __typename?: 'Task', _id: string, value: string, checked: boolean, createdAt: any, updatedAt: any }> };
 
 export type GetSingleTaskQueryVariables = Exact<{
   taskID: Scalars['String'];
 }>;
 
 
-export type GetSingleTaskQuery = { __typename?: 'Query', task: { __typename?: 'Task', _id: string, value: string, checked: boolean } };
+export type GetSingleTaskQuery = { __typename?: 'Query', task: { __typename?: 'Task', _id: string, value: string, checked: boolean, createdAt: any, updatedAt: any } };
+
+export type CreateTaskMutationVariables = Exact<{
+  newTaskINPUT: NewTaskInput;
+}>;
+
+
+export type CreateTaskMutation = { __typename?: 'Mutation', createTask: { __typename?: 'Task', value: string, _id: string, checked: boolean, createdAt: any, updatedAt: any } };
 
 
 export const GetAllTasksDocument = gql`
@@ -52,6 +76,8 @@ export const GetAllTasksDocument = gql`
     _id
     value
     checked
+    createdAt
+    updatedAt
   }
 }
     `;
@@ -91,6 +117,8 @@ export const GetSingleTaskDocument = gql`
     _id
     value
     checked
+    createdAt
+    updatedAt
   }
 }
     `;
@@ -125,3 +153,41 @@ export type GetSingleTaskQueryResult = Apollo.QueryResult<GetSingleTaskQuery, Ge
 export function refetchGetSingleTaskQuery(variables: GetSingleTaskQueryVariables) {
       return { query: GetSingleTaskDocument, variables: variables }
     }
+export const CreateTaskDocument = gql`
+    mutation createTask($newTaskINPUT: NewTaskInput!) {
+  createTask(newTaskINPUT: $newTaskINPUT) {
+    value
+    _id
+    checked
+    createdAt
+    updatedAt
+    checked
+  }
+}
+    `;
+export type CreateTaskMutationFn = Apollo.MutationFunction<CreateTaskMutation, CreateTaskMutationVariables>;
+
+/**
+ * __useCreateTaskMutation__
+ *
+ * To run a mutation, you first call `useCreateTaskMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTaskMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTaskMutation, { data, loading, error }] = useCreateTaskMutation({
+ *   variables: {
+ *      newTaskINPUT: // value for 'newTaskINPUT'
+ *   },
+ * });
+ */
+export function useCreateTaskMutation(baseOptions?: Apollo.MutationHookOptions<CreateTaskMutation, CreateTaskMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTaskMutation, CreateTaskMutationVariables>(CreateTaskDocument, options);
+      }
+export type CreateTaskMutationHookResult = ReturnType<typeof useCreateTaskMutation>;
+export type CreateTaskMutationResult = Apollo.MutationResult<CreateTaskMutation>;
+export type CreateTaskMutationOptions = Apollo.BaseMutationOptions<CreateTaskMutation, CreateTaskMutationVariables>;

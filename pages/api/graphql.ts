@@ -1,12 +1,16 @@
 /* import { graphqlSchema } from "model/Task"; */
-import { ApolloServer, gql } from "apollo-server-micro";
+import { ApolloServer } from "apollo-server-micro";
 import { NextApiRequest, NextApiResponse } from "next";
 import { buildSchema } from "type-graphql";
-import dbConnect from "utils/dbConnect";
+import dbConnect from "server/db/dbConnect";
 import { TaskResolver } from "server/resolvers/tasks.resolvers";
 
 const schema = await buildSchema({
   resolvers: [TaskResolver],
+  /* https://github.com/MichalLytek/type-graphql/issues/1397 */
+  validate: { forbidUnknownValues: false },
+  //TESTING when getting validation error and I wanted to log the input being received
+  /* validate: false, */
 });
 
 const server = new ApolloServer({

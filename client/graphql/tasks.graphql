@@ -3,6 +3,8 @@ query GetAllTasks {
     _id
     value
     checked
+    createdAt
+    updatedAt
   }
 }
 
@@ -10,6 +12,19 @@ query getSingleTask($taskID: String!) {
   task(taskID: $taskID) {
     _id
     value
+    checked
+    createdAt
+    updatedAt
+  }
+}
+
+mutation createTask($newTaskINPUT: NewTaskInput!) {
+  createTask(newTaskINPUT: $newTaskINPUT) {
+    value
+    _id
+    checked
+    createdAt
+    updatedAt
     checked
   }
 }
