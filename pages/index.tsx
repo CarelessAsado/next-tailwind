@@ -3,10 +3,13 @@ import Image from "next/image";
 import { Inter } from "@next/font/google";
 import styles from "styles/Home.module.css";
 import Link from "next/link";
+import { useGetAllTasksQuery } from "client/generated/graphql";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  const { data: dataQuery } = useGetAllTasksQuery();
+  console.log(dataQuery, 777);
   return (
     <>
       <Head>

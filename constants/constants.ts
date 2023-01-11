@@ -3,7 +3,8 @@ export const BACKEND_URL = dev ? "http://localhost:3000" : "COMPLETE AFTER";
 
 export const BACKEND_URL_API = BACKEND_URL + "/api";
 
-class Router {
+class BackendRouter {
   tasksControllerAPI = "/tasks.controller";
+  GRAPHQL = "/graphql";
 }
-export const ROUTER = new Router();
+export const BACKEND_ROUTER = new BackendRouter();

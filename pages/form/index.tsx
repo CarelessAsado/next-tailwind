@@ -1,12 +1,11 @@
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
-import React, { useEffect } from "react";
 import { useState } from "react";
 import { ITaskObject } from "model/Task";
 import dbConnect from "utils/dbConnect";
 import { getAllTasks } from "../api/tasks.controller";
 import { SingleTask } from "components/SingleTask";
-import { BACKEND_URL_API, ROUTER } from "constants/constants";
+import { BACKEND_URL_API, BACKEND_ROUTER } from "constants/constants";
 import Spinner from "components/Spinner";
 
 type PageProps = {
@@ -38,10 +37,13 @@ const Form = ({ serverData, submitForm }: PageProps) => {
       //JEST TEST
       await submitForm?.();
       //switch to axios
-      const resp = await fetch(BACKEND_URL_API + ROUTER.tasksControllerAPI, {
-        body: JSON.stringify(formState),
-        method: "POST",
-      });
+      const resp = await fetch(
+        BACKEND_URL_API + BACKEND_ROUTER.tasksControllerAPI,
+        {
+          body: JSON.stringify(formState),
+          method: "POST",
+        }
+      );
 
       const value = await resp.json();
     } catch (error) {
@@ -144,7 +146,7 @@ export async function getServerSideProps() {
   const serializableTasks = JSON.parse(JSON.stringify(tasks));
 
   const _props: PageProps = { serverData: serializableTasks };
-  console.log("getSERVER SIDE PROPS CALLED", serializableTasks);
+  console.log("getSERVER SIDE PROPS CALLED", serializableTasks.length);
   return { props: _props };
 }
 export default Form;
