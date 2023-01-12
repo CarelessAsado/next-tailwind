@@ -71,6 +71,11 @@ const Form = ({ serverData, submitForm }: PageProps) => {
   const handleDelete = (id: string) => {
     setQueryData((state) => state.filter((task) => task._id !== id));
   };
+  const handleUpdateState = (updatedTask: Task) => {
+    setQueryData((state) =>
+      state.map((task) => (task._id === updatedTask._id ? updatedTask : task))
+    );
+  };
 
   /*   const [data, setData] = useState<ITaskObject[]>(serverData); */
 
@@ -152,6 +157,7 @@ const Form = ({ serverData, submitForm }: PageProps) => {
             task={task}
             key={task._id}
             handleDeleteState={handleDelete}
+            handleUpdateState={handleUpdateState}
           />
         );
       })}

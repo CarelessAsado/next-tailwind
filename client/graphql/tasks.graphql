@@ -29,6 +29,17 @@ mutation createTask($newTaskINPUT: NewTaskInput!) {
   }
 }
 
+mutation updateTask($task: updateTaskInput!) {
+  updateTask(task: $task) {
+    value
+    _id
+    checked
+    createdAt
+    updatedAt
+    checked
+  }
+}
+
 mutation deleteTask($taskId: String!) {
   deleteTask(taskID: $taskId)
 }

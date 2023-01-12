@@ -6,35 +6,7 @@ import {
   GetAllTasksDocument,
   GetAllTasksQuery,
 } from "client/generated/graphql";
-
-//added MockedResponse to type mocks results
-const mocks: MockedResponse<GetAllTasksQuery>[] = [
-  {
-    request: {
-      query: GetAllTasksDocument,
-    },
-    result: {
-      data: {
-        tasks: [
-          {
-            _id: "1",
-            value: "Task 1",
-            checked: false,
-            createdAt: "2022-01-01T00:00:00Z",
-            updatedAt: "2022-01-01T00:00:00Z",
-          },
-          {
-            _id: "2",
-            value: "Task 2",
-            checked: true,
-            createdAt: "2022-01-01T00:00:00Z",
-            updatedAt: "2022-01-01T00:00:00Z",
-          },
-        ],
-      },
-    },
-  },
-];
+import { ApolloMockProviderReusable } from "./ApolloMockProvider";
 
 const inputs = [
   { label: "Full Name", value: "John Smith" },
@@ -47,9 +19,9 @@ const inputLabels = inputs.map((inp) => inp.label);
 describe("Form", () => {
   it("should render the form", () => {
     const { getByLabelText } = render(
-      <MockedProvider mocks={mocks}>
+      <ApolloMockProviderReusable>
         <Form serverData={[]} />
-      </MockedProvider>
+      </ApolloMockProviderReusable>
     );
 
     inputLabels.forEach((label) => {
@@ -59,9 +31,9 @@ describe("Form", () => {
 
   it("should update the form state when the inputs are changed", () => {
     const { getByLabelText } = render(
-      <MockedProvider mocks={mocks}>
+      <ApolloMockProviderReusable>
         <Form serverData={[]} />
-      </MockedProvider>
+      </ApolloMockProviderReusable>
     );
 
     inputs.forEach((input) => {
@@ -82,9 +54,9 @@ describe("Form", () => {
     });
 
     const { getByRole, findByTestId } = render(
-      <MockedProvider mocks={mocks}>
+      <ApolloMockProviderReusable>
         <Form serverData={[]} submitForm={mockSubmit} />
-      </MockedProvider>
+      </ApolloMockProviderReusable>
     );
 
     const submitButton = getByRole("button");

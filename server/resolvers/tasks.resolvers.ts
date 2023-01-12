@@ -1,10 +1,39 @@
-import { Resolver, Query, Arg, Mutation, InputType, Field } from "type-graphql";
+import {
+  Resolver,
+  Query,
+  Arg,
+  Mutation,
+  InputType,
+  Field,
+  ID,
+} from "type-graphql";
 import { Task, TaskModel } from "server/schemas/Task.schema";
+import mongoose from "mongoose";
 
 @InputType()
 class NewTaskInput implements Partial<Task> {
   @Field()
   value!: string;
+}
+@InputType()
+class updateTaskInput implements Task {
+  @Field(() => ID)
+  _id!: mongoose.Types.ObjectId;
+
+  @Field({ nullable: false })
+  value!: string;
+
+  @Field()
+  checked!: boolean;
+
+  @Field()
+  createdAt!: Date;
+
+  @Field()
+  updatedAt!: Date;
+  /* TEST LATER STRICT TYPE HERE
+  @Field()
+  tuhna!: Date; */
 }
 
 @Resolver(Task)
@@ -43,5 +72,17 @@ export class TaskResolver {
       throw new Error("Invalid task ID");
     }
     return taskID;
+  }
+
+  @Mutation(() => Task)
+  async updateTask(@Arg("task") task: updateTaskInput): Promise<Task> {
+    const result = await TaskModel.findById(task._id);
+    if (!result) {
+      throw new Error("Invalid task ID");
+    }
+    result.value = task.value;
+    result.checked = task.checked;
+    const savedTask = await result.save();
+    return savedTask;
   }
 }
