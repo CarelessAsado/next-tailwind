@@ -22,14 +22,15 @@ const Form = ({ serverData, submitForm }: PageProps) => {
 
   //comes as undefined at first, it console.logs on client AND SERVER the "undefined"
   //then when data actually arrives it only logs on client
-  const { data: dataQuery } = useGetAllTasksQuery();
-  console.log(dataQuery, 999, "DID USEGETALLTASKSQUERY SUCCEEDED?");
-  const [createTaskMutation, { data, error }] = useCreateTaskMutation({
-    variables: {
-      newTaskINPUT: { value: "TEST NOT DYNAMIC, change afterwards" },
+  const { data: dataQuery } = useGetAllTasksQuery({
+    onCompleted(data) {
+      setQueryData(data.tasks);
     },
   });
-  const [queryData, setQueryData] = useState<Task[]>();
+
+  console.log(dataQuery, 999, "DID USEGETALLTASKSQUERY SUCCEEDED?");
+  const [createTaskMutation, { data, error }] = useCreateTaskMutation();
+  const [queryData, setQueryData] = useState<Task[]>([]);
   const [formState, setFormState] = useState({
     name: "",
     email: "",
@@ -60,7 +61,16 @@ const Form = ({ serverData, submitForm }: PageProps) => {
       );
 
       const value = await resp.json(); */
-      const resp = await createTaskMutation();
+      const resp = await createTaskMutation({
+        variables: {
+          newTaskINPUT: { value: formState.name },
+        },
+      });
+      const created = resp.data?.createTask;
+      if (created) {
+        setQueryData((v) => [...v, created]);
+      }
+
       console.log(resp, 111);
     } catch (error) {
       console.log(JSON.stringify(error));
@@ -68,6 +78,10 @@ const Form = ({ serverData, submitForm }: PageProps) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDelete = (id: string) => {
+    setQueryData((state) => state.filter((task) => task._id !== id));
   };
 
   /*   const [data, setData] = useState<ITaskObject[]>(serverData); */
@@ -144,8 +158,14 @@ const Form = ({ serverData, submitForm }: PageProps) => {
         </button>
       </form>
       <b> {!!error && error.message}</b>
-      {dataQuery?.tasks.map((task) => {
-        return <SingleTask task={task} key={task._id} />;
+      {queryData?.map((task) => {
+        return (
+          <SingleTask
+            task={task}
+            key={task._id}
+            handleDeleteState={handleDelete}
+          />
+        );
       })}
     </>
   );

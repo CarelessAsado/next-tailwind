@@ -1,7 +1,36 @@
 import React from "react";
 import { render, fireEvent, waitFor, getByRole } from "@testing-library/react";
 import Form from "pages/form/index";
-import { BACKEND_URL_API, ROUTER } from "constants/constants";
+import { MockedProvider } from "@apollo/react-testing";
+import { GetAllTasksDocument } from "client/generated/graphql";
+
+const mocks = [
+  {
+    request: {
+      query: GetAllTasksDocument,
+    },
+    result: {
+      data: {
+        tasks: [
+          {
+            _id: "1",
+            value: "Task 1",
+            checked: false,
+            createdAt: "2022-01-01T00:00:00Z",
+            updatedAt: "2022-01-01T00:00:00Z",
+          },
+          {
+            _id: "2",
+            value: "Task 2",
+            checked: true,
+            createdAt: "2022-01-01T00:00:00Z",
+            updatedAt: "2022-01-01T00:00:00Z",
+          },
+        ],
+      },
+    },
+  },
+];
 
 const inputs = [
   { label: "Full Name", value: "John Smith" },
@@ -13,7 +42,11 @@ const inputLabels = inputs.map((inp) => inp.label);
 
 describe("Form", () => {
   it("should render the form", () => {
-    const { getByLabelText } = render(<Form serverData={[]} />);
+    const { getByLabelText } = render(
+      <MockedProvider mocks={mocks}>
+        <Form serverData={[]} />
+      </MockedProvider>
+    );
 
     inputLabels.forEach((label) => {
       expect(getByLabelText(label)).toBeDefined();

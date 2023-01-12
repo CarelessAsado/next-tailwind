@@ -28,3 +28,7 @@ mutation createTask($newTaskINPUT: NewTaskInput!) {
     checked
   }
 }
+
+mutation deleteTask($taskId: String!) {
+  deleteTask(taskID: $taskId)
+}

@@ -35,4 +35,13 @@ export class TaskResolver {
 
     return savedTask;
   }
+
+  @Mutation(() => String)
+  async deleteTask(@Arg("taskID") taskID: string): Promise<string> {
+    const result = await TaskModel.findByIdAndDelete(taskID);
+    if (!result) {
+      throw new Error("Invalid task ID");
+    }
+    return taskID;
+  }
 }
