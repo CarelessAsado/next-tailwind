@@ -1,10 +1,13 @@
 import React from "react";
 import { render, fireEvent, waitFor, getByRole } from "@testing-library/react";
 import Form from "pages/form/index";
-import { MockedProvider } from "@apollo/react-testing";
-import { GetAllTasksDocument } from "client/generated/graphql";
-
-const mocks = [
+import { MockedProvider, MockedResponse } from "@apollo/react-testing";
+import {
+  GetAllTasksDocument,
+  GetAllTasksQuery,
+} from "client/generated/graphql";
+//added MockedResponse to type mocks results
+const mocks: MockedResponse<GetAllTasksQuery>[] = [
   {
     request: {
       query: GetAllTasksDocument,
@@ -54,7 +57,11 @@ describe("Form", () => {
   });
 
   it("should update the form state when the inputs are changed", () => {
-    const { getByLabelText } = render(<Form serverData={[]} />);
+    const { getByLabelText } = render(
+      <MockedProvider mocks={mocks}>
+        <Form serverData={[]} />
+      </MockedProvider>
+    );
 
     inputs.forEach((input) => {
       const element = getByLabelText(input.label);
@@ -74,7 +81,9 @@ describe("Form", () => {
     });
 
     const { getByRole, findByTestId } = render(
-      <Form serverData={[]} submitForm={mockSubmit} />
+      <MockedProvider mocks={mocks}>
+        <Form serverData={[]} submitForm={mockSubmit} />
+      </MockedProvider>
     );
 
     const submitButton = getByRole("button");
