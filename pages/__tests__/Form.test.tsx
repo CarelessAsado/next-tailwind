@@ -6,6 +6,7 @@ import {
   GetAllTasksDocument,
   GetAllTasksQuery,
 } from "client/generated/graphql";
+
 //added MockedResponse to type mocks results
 const mocks: MockedResponse<GetAllTasksQuery>[] = [
   {

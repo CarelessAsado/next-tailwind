@@ -1,10 +1,7 @@
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import { useState } from "react";
-import dbConnect from "server/db/dbConnect";
-import { getAllTasks } from "../api/tasks.controller";
 import { SingleTask } from "components/SingleTask";
-import { BACKEND_URL_API, BACKEND_ROUTER } from "constants/constants";
 import Spinner from "components/Spinner";
 import {
   Task,
@@ -51,16 +48,7 @@ const Form = ({ serverData, submitForm }: PageProps) => {
     try {
       //JEST TEST
       await submitForm?.();
-      //switch to axios
-      /*  const resp = await fetch(
-        BACKEND_URL_API + BACKEND_ROUTER.tasksControllerAPI,
-        {
-          body: JSON.stringify(formState),
-          method: "POST",
-        }
-      );
 
-      const value = await resp.json(); */
       const resp = await createTaskMutation({
         variables: {
           newTaskINPUT: { value: formState.name },
