@@ -6,6 +6,7 @@ import {
   InputType,
   Field,
   ID,
+  Authorized,
 } from "type-graphql";
 import { Task, TaskModel } from "server/schemas/Task.schema";
 import mongoose from "mongoose";
@@ -38,6 +39,7 @@ class updateTaskInput implements Task {
 
 @Resolver(Task)
 export class TaskResolver {
+  @Authorized()
   @Query(() => [Task])
   async tasks(): Promise<Task[]> {
     return TaskModel.find({});

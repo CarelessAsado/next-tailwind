@@ -49,7 +49,6 @@ describe("SingleTask", () => {
 
     fireEvent.click(checkbox);
     await waitFor(() => {
-      expect(handleUpdateState).toHaveBeenCalled();
       expect(handleUpdateState).toHaveBeenCalledWith({
         ...singleTaskSample,
         checked: true,
