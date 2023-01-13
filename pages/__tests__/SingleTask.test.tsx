@@ -1,6 +1,6 @@
 import { SingleTask } from "components/SingleTask";
 import React from "react";
-import { fireEvent, getByTitle, render } from "@testing-library/react";
+import { fireEvent, getByTitle, render, waitFor } from "@testing-library/react";
 import { Task } from "client/generated/graphql";
 import { ApolloMockProviderReusable } from "./ApolloMockProvider";
 
@@ -35,7 +35,7 @@ describe("SingleTask", () => {
     expect(getByRole("checkbox")).toBeDefined();
     expect(getByTitle("Delete")).toBeDefined();
   });
-  it("it should check and uncheck checkbox", () => {
+  it("it should check and uncheck checkbox", async () => {
     // Arrange
 
     const handleDeleteState = jest.fn();
@@ -56,10 +56,18 @@ describe("SingleTask", () => {
     expect(checkbox.checked).toBe(false);
 
     fireEvent.click(checkbox);
-    expect(checkbox.checked).toBe(true);
-
-    fireEvent.click(checkbox);
-    expect(checkbox.checked).toBe(false);
+    await waitFor(() => {
+      expect(handleUpdateState).toHaveBeenCalled();
+      expect(handleUpdateState).toHaveBeenCalledWith({
+        _id: "1",
+        value: "RESPONSE",
+        checked: true,
+        createdAt: "2022-01-01T00:00:00Z",
+        updatedAt: "2022-01-01T00:00:00Z",
+        __typename: "Task",
+      });
+      /*  expect(checkbox.checked).toBe(true); */
+    });
   });
 
   it("should render multiple tasks", () => {

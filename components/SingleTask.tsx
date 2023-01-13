@@ -18,29 +18,28 @@ export const SingleTask = ({
   handleDeleteState: (id: string) => void;
   handleUpdateState: (id: Task) => void;
 }) => {
-  const [checked, setChecked] = useState(task.checked);
-
   const [updateTaskMutation, { data, loading, error }] =
     useUpdateTaskMutation();
   const handleCheckboxChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { __typename, ...rest } = task;
-    await updateTaskMutation({
-      variables: {
-        task: {
-          ...rest,
-          checked: event.target.checked,
+    try {
+      const { data } = await updateTaskMutation({
+        variables: {
+          task: {
+            ...rest,
+            checked: event.target.checked,
+          },
         },
-      },
-      onCompleted(data, clientOptions) {
-        setChecked(data.updateTask.checked);
+      });
+      if (data) {
         handleUpdateState(data.updateTask);
-      },
-      onError(error, clientOptions) {
-        alert(JSON.stringify(error));
-      },
-    });
+      }
+    } catch (error) {
+      alert(JSON.stringify(error));
+      console.log(error);
+    }
   };
 
   const [deleteTaskMutation, { loading: deleteLoading }] =
@@ -63,11 +62,13 @@ export const SingleTask = ({
   };
 
   return (
-    <div className={`flex gap-5 ${checked && "text-slate-400 line-through"}`}>
+    <div
+      className={`flex gap-5 ${task.checked && "text-slate-400 line-through"}`}
+    >
       <Link href={"/form/" + task._id}>{task.value}</Link>
       <input
         type="checkbox"
-        checked={checked}
+        checked={task.checked}
         onChange={handleCheckboxChange}
       />
       <AiFillDelete onClick={handleDeleteTask} title="Delete" />
