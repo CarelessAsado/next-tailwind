@@ -3,16 +3,8 @@ import React from "react";
 import { fireEvent, getByTitle, render, waitFor } from "@testing-library/react";
 import { Task } from "client/generated/graphql";
 import { ApolloMockProviderReusable } from "./ApolloMockProvider";
-
-const task: Task = {
-  _id: "1",
-  value: "task 1",
-  checked: false,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-
-const queryData: Task[] = [task];
+import { singleTaskSample } from "./ApolloMockProvider";
+const queryData: Task[] = [singleTaskSample];
 describe("SingleTask", () => {
   it("should render task value and delete button", () => {
     // Arrange
@@ -23,7 +15,7 @@ describe("SingleTask", () => {
     const { getByText, getByRole, getByTitle } = render(
       <ApolloMockProviderReusable>
         <SingleTask
-          task={task}
+          task={singleTaskSample}
           handleDeleteState={handleDeleteState}
           handleUpdateState={handleUpdateState}
         />
@@ -31,7 +23,7 @@ describe("SingleTask", () => {
     );
     // Assert
 
-    expect(getByText(task.value)).toBeDefined();
+    expect(getByText(singleTaskSample.value)).toBeDefined();
     expect(getByRole("checkbox")).toBeDefined();
     expect(getByTitle("Delete")).toBeDefined();
   });
@@ -44,7 +36,7 @@ describe("SingleTask", () => {
     const { getByRole } = render(
       <ApolloMockProviderReusable>
         <SingleTask
-          task={task}
+          task={singleTaskSample}
           handleDeleteState={handleDeleteState}
           handleUpdateState={handleUpdateState}
         />
@@ -59,13 +51,10 @@ describe("SingleTask", () => {
     await waitFor(() => {
       expect(handleUpdateState).toHaveBeenCalled();
       expect(handleUpdateState).toHaveBeenCalledWith({
-        _id: "1",
-        value: "RESPONSE",
+        ...singleTaskSample,
         checked: true,
-        createdAt: "2022-01-01T00:00:00Z",
-        updatedAt: "2022-01-01T00:00:00Z",
-        __typename: "Task",
       });
+
       /*  expect(checkbox.checked).toBe(true); */
     });
   });

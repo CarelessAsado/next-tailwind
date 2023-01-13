@@ -7,11 +7,29 @@ import {
   UpdateTaskDocument,
   UpdateTaskInput,
   UpdateTaskMutationVariables,
+  Task,
 } from "client/generated/graphql";
 
 interface Props {
   children: React.ReactNode;
 }
+export const singleTaskSample: Task = {
+  _id: "1",
+  value: "task 1",
+  checked: false,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const fakeDataArray: Task[] = [
+  singleTaskSample,
+  {
+    _id: "2",
+    value: "Task 2",
+    checked: true,
+    createdAt: "2022-01-01T00:00:00Z",
+    updatedAt: "2022-01-01T00:00:00Z",
+  },
+];
 
 //added MockedResponse to type mocks results
 const mocks: MockedResponse<GetAllTasksQuery | UpdateTaskMutation>[] = [
@@ -21,22 +39,7 @@ const mocks: MockedResponse<GetAllTasksQuery | UpdateTaskMutation>[] = [
     },
     result: {
       data: {
-        tasks: [
-          {
-            _id: "1",
-            value: "Task 1",
-            checked: false,
-            createdAt: "2022-01-01T00:00:00Z",
-            updatedAt: "2022-01-01T00:00:00Z",
-          },
-          {
-            _id: "2",
-            value: "Task 2",
-            checked: true,
-            createdAt: "2022-01-01T00:00:00Z",
-            updatedAt: "2022-01-01T00:00:00Z",
-          },
-        ],
+        tasks: fakeDataArray,
       },
     },
   },
@@ -67,12 +70,8 @@ const mocks: MockedResponse<GetAllTasksQuery | UpdateTaskMutation>[] = [
     result: () => ({
       data: {
         updateTask: {
-          _id: "1",
-          value: "RESPONSE",
+          ...singleTaskSample,
           checked: true,
-          createdAt: "2022-01-01T00:00:00Z",
-          updatedAt: "2022-01-01T00:00:00Z",
-          __typename: "Task",
         },
       },
     }),
