@@ -17,6 +17,7 @@ export default function Home() {
       </Head>
       <main className={styles.main}>
         <Link href={"/form"}>GO TO FORM</Link>
+        <Link href={"/login"}>GO TO LOGIN</Link>
         <div className={styles.description}>
           <p>
             Get started by editing&nbsp;
