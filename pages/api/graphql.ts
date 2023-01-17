@@ -12,6 +12,7 @@ export const customAuthChecker: AuthChecker<ContextType> = (
   { root, args, context, info },
   roles
 ) => {
+  console.log(context, 666);
   console.log({ context, info: info.path, roles });
   // here we can read the user from context
   // and check his permission in the db against the `roles` argument

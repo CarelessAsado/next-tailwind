@@ -12,7 +12,8 @@ const verifyJwt = async ({
   try {
     // Get the access token
     let access_token = req.headers?.authorization;
-    console.log("AUTH MIDDLEWARE");
+    console.log("AUTH MIDDLEWARE EN APOLLO SERVER CONTEXT");
+
     /* if (
       req.headers.authorization &&
       req.headers.authorization.startsWith("Bearer")
@@ -33,7 +34,10 @@ const verifyJwt = async ({
     /* if (!decoded) throw new AuthenticationError("Invalid access token"); */
 
     // Check if user exist
-    const user: ContextType = { name: "Rod", admin: true };
+    const user: ContextType = {
+      name: "Rod hardcoded in context apollo auth",
+      admin: true,
+    };
     /*     const user = await UserModel.findById(JSON.parse(session)._id)
       .select("+verified")
       .lean(true);
