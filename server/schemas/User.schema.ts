@@ -15,6 +15,10 @@ export class User {
   @prop({ required: true })
   name!: string;
 
+  @Field({ nullable: false })
+  @prop({ required: true, unique: true })
+  email!: string;
+
   @Field()
   @prop({ default: false })
   admin!: boolean;

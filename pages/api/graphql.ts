@@ -1,10 +1,11 @@
 /* import { graphqlSchema } from "model/Task"; */
 import { ApolloServer } from "apollo-server-micro";
 import { NextApiRequest, NextApiResponse } from "next";
-import { AuthChecker, buildSchema } from "type-graphql";
+import { AuthChecker, buildSchema, MiddlewareFn } from "type-graphql";
 import dbConnect from "server/db/dbConnect";
 import { TaskResolver } from "server/resolvers/tasks.resolvers";
 import verifyJwt from "server/middleware/auth";
+import { UserResolver } from "server/resolvers/user.resolvers";
 
 export type ContextType = { admin: boolean; name: string };
 
@@ -12,19 +13,31 @@ export const customAuthChecker: AuthChecker<ContextType> = (
   { root, args, context, info },
   roles
 ) => {
+  console.log("CUSTOM AUTH CHECKER TRIGGERED BY @Aytgebtucated");
   console.log(context, 666);
   console.log({ context, info: info.path, roles });
   // here we can read the user from context
-  // and check his permission in the db against the `roles` argument
-  // that comes from the `@Authorized` decorator, eg. ["ADMIN", "MODERATOR"]
-  console.log("this is typegraphql / @Authorized related in theory");
+  // and check his permission in the db against the `roles` argument that comes from the `@Authorized` decorator, eg. ["ADMIN", "MODERATOR"]
+
   return true; // or false if access is denied
 };
 
+const authMiddleWareTypeGraphql: MiddlewareFn<ContextType> = (
+  { context, info },
+  next
+) => {
+  console.log(
+    `Logging access: ${context.name} -> ${info.parentType.name}.${info.fieldName}`
+  );
+  console.log("CHECK IF IS THE FIRST OR LAST");
+  return next();
+};
 const schema = await buildSchema({
-  resolvers: [TaskResolver],
+  resolvers: [TaskResolver, UserResolver],
   /* https://github.com/MichalLytek/type-graphql/issues/1397 */
   validate: { forbidUnknownValues: false },
+  globalMiddlewares: [authMiddleWareTypeGraphql],
+  //IT RUNS ONLY ON THOSE FIELDS THAT HAVE A @Authorized
   authChecker: customAuthChecker,
   //authChecker https://typegraphql.com/docs/authorization.html
   //TESTING when getting validation error and I wanted to log the input being received

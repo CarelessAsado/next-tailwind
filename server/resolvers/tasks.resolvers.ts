@@ -7,9 +7,12 @@ import {
   Field,
   ID,
   Authorized,
+  UseMiddleware,
+  MiddlewareFn,
 } from "type-graphql";
 import { Task, TaskModel } from "server/schemas/Task.schema";
 import mongoose from "mongoose";
+import { ContextType } from "pages/api/graphql";
 
 @InputType()
 class NewTaskInput implements Partial<Task> {
@@ -42,6 +45,7 @@ export class TaskResolver {
   @Authorized()
   @Query(() => [Task])
   async tasks(): Promise<Task[]> {
+    console.log("INSIDE QUERY fetching DB");
     return TaskModel.find({});
   }
 
