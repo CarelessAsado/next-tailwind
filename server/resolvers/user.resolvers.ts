@@ -11,7 +11,7 @@ import {
 import { User, UserModel } from "server/schemas/User.schema";
 import { DocumentType } from "@typegoose/typegoose";
 
-type UserWithoutPwd = Omit<User, "password">;
+export type UserWithoutPwd = Omit<User, "password" | "admin">;
 
 @InputType()
 class NewUserInput implements Partial<User> {
@@ -24,7 +24,7 @@ class NewUserInput implements Partial<User> {
 }
 
 export default function getCleanUser(user: DocumentType<User>): UserWithoutPwd {
-  const { password, ...rest } = user.toObject();
+  const { password, admin, ...rest } = user.toObject();
   return rest;
 }
 
