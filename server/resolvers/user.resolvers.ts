@@ -22,6 +22,13 @@ class NewUserInput implements Partial<User> {
   @Field()
   email!: string;
 }
+@InputType()
+class LoginInput {
+  @Field()
+  password!: string;
+  @Field()
+  email!: string;
+}
 
 export default function getCleanUser(user: DocumentType<User>): UserWithoutPwd {
   const { password, admin, ...rest } = user.toObject();
@@ -36,16 +43,30 @@ export class UserResolver {
     console.log("INSIDE QUERY fetching DB");
     return UserModel.find({});
   }
-
+*/
   @Query(() => User)
-  async task(@Arg("taskID") taskID: string): Promise<User> {
-    const task = await UserModel.findById(taskID);
-    if (!task) {
-      throw new Error("Invalid task ID");
+  async loginUser(
+    @Arg("loginInput") loginInput: LoginInput
+  ): Promise<UserWithoutPwd> {
+    const user = await UserModel.findOne({ email: loginInput.email }).select(
+      "+password"
+    );
+    const notFoundError = new Error("Invalid task ID");
+    if (!user) {
+      throw notFoundError;
     }
-    return task;
+
+    console.log(user, 666);
+    //add bcrypt logic AFTERWARDS
+    if (user.password !== loginInput.password) {
+      throw notFoundError;
+    }
+
+    return getCleanUser(user);
   }
- */
+
+  //ERROR / createUser QUERY: I can query pwd and admin from client side even though I am not returning those fields
+  //https://www.google.com/search?q=make+a+field+optional+in+graphql&oq=make+a+field+optional+in+graphql&aqs=chrome..69i57j0i22i30.8849j0j4&sourceid=chrome&ie=UTF-8
   @Mutation(() => User)
   async createUser(
     @Arg("newUserINPUT") newUserINPUT: NewUserInput
@@ -55,7 +76,8 @@ export class UserResolver {
     });
 
     const savedUser = await toBeSavedUser.save();
-    const del = await savedUser.delete();
+    console.log(savedUser, 666);
+    /* const del = await savedUser.delete(); */
 
     //CREATE TOKENS
 

@@ -8,3 +8,7 @@ class BackendRouter {
   GRAPHQL = "/graphql";
 }
 export const BACKEND_ROUTER = new BackendRouter();
+class FrontendRouter {
+  LOGIN = "/login";
+}
+export const FRONTEND_ROUTER = new FrontendRouter();

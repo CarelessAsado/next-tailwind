@@ -47,6 +47,17 @@ const schema = await buildSchema({
 const server = new ApolloServer({
   schema,
   context: verifyJwt,
+  formatError(error) {
+    console.log(error, 111);
+    console.log(error.extensions?.exception, 999);
+    if (error.extensions?.exception?.code == 11000) {
+      console.log(JSON.stringify(error));
+      console.log(error.name);
+      //check how can I make this more dynamic
+      error.message = "Duplicated object.";
+    }
+    return error;
+  },
 }); /*  async ({ req, res }) => {
     // Get the user token from the headers.
     //    const token = req.headers.authorization || ""; 

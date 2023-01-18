@@ -16,6 +16,11 @@ export type Scalars = {
   DateTime: any;
 };
 
+export type LoginInput = {
+  email: Scalars['String'];
+  password: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createTask: Task;
@@ -56,8 +61,14 @@ export type NewUserInput = {
 
 export type Query = {
   __typename?: 'Query';
+  loginUser: User;
   task: Task;
   tasks: Array<Task>;
+};
+
+
+export type QueryLoginUserArgs = {
+  loginInput: LoginInput;
 };
 
 
@@ -132,6 +143,13 @@ export type CreateUserMutationVariables = Exact<{
 
 
 export type CreateUserMutation = { __typename?: 'Mutation', createUser: { __typename?: 'User', name: string, email: string, _id: string, createdAt: any, updatedAt: any } };
+
+export type LoginUserQueryVariables = Exact<{
+  loginInput: LoginInput;
+}>;
+
+
+export type LoginUserQuery = { __typename?: 'Query', loginUser: { __typename?: 'User', name: string, email: string, _id: string, createdAt: any, updatedAt: any } };
 
 
 export const GetAllTasksDocument = gql`
@@ -361,3 +379,45 @@ export function useCreateUserMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
 export type CreateUserMutationResult = Apollo.MutationResult<CreateUserMutation>;
 export type CreateUserMutationOptions = Apollo.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
+export const LoginUserDocument = gql`
+    query loginUser($loginInput: LoginInput!) {
+  loginUser(loginInput: $loginInput) {
+    name
+    email
+    _id
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useLoginUserQuery__
+ *
+ * To run a query within a React component, call `useLoginUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useLoginUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useLoginUserQuery({
+ *   variables: {
+ *      loginInput: // value for 'loginInput'
+ *   },
+ * });
+ */
+export function useLoginUserQuery(baseOptions: Apollo.QueryHookOptions<LoginUserQuery, LoginUserQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<LoginUserQuery, LoginUserQueryVariables>(LoginUserDocument, options);
+      }
+export function useLoginUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<LoginUserQuery, LoginUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<LoginUserQuery, LoginUserQueryVariables>(LoginUserDocument, options);
+        }
+export type LoginUserQueryHookResult = ReturnType<typeof useLoginUserQuery>;
+export type LoginUserLazyQueryHookResult = ReturnType<typeof useLoginUserLazyQuery>;
+export type LoginUserQueryResult = Apollo.QueryResult<LoginUserQuery, LoginUserQueryVariables>;
+export function refetchLoginUserQuery(variables: LoginUserQueryVariables) {
+      return { query: LoginUserDocument, variables: variables }
+    }

@@ -7,3 +7,13 @@ mutation createUser($newUserInput: NewUserInput!) {
     updatedAt
   }
 }
+
+query loginUser($loginInput: LoginInput!) {
+  loginUser(loginInput: $loginInput) {
+    name
+    email
+    _id
+    createdAt
+    updatedAt
+  }
+}

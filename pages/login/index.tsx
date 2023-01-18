@@ -1,6 +1,7 @@
 import { useUserContext } from "client/context/UserContext";
 import { useCreateUserMutation, NewUserInput } from "client/generated/graphql";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 
 interface InputField {
@@ -9,10 +10,13 @@ interface InputField {
 }
 
 const LoginPage = () => {
+  const { loginOrLogoutUser } = useUserContext();
   const [createUserMutation, { data, loading, error }] =
     useCreateUserMutation();
 
-  type mapIt = keyof NewUserInput;
+  const router = useRouter();
+
+  console.log(router.query);
 
   const [registerData, setRegisterData] = useState<NewUserInput>({
     email: "",
@@ -22,14 +26,20 @@ const LoginPage = () => {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { loginOrLogoutUser } = useUserContext();
+
     const { data } = await createUserMutation({
       variables: {
         newUserInput: registerData,
       },
+      onError(error, clientOptions) {
+        console.log(error);
+      },
     });
 
-    data?.createUser && loginOrLogoutUser(data?.createUser);
+    if (data?.createUser) {
+      loginOrLogoutUser(data?.createUser);
+      alert(data?.createUser);
+    }
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
