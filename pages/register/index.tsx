@@ -1,69 +1,63 @@
 import { useUserContext } from "client/context/UserContext";
-import { LoginInput, useLoginUserMutation } from "client/generated/graphql";
+import { useCreateUserMutation, NewUserInput } from "client/generated/graphql";
 import { FRONTEND_ROUTER } from "constants/constants";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 
 interface InputField {
-  name: keyof LoginInput;
+  name: keyof NewUserInput;
   type: string;
 }
 
 const LoginPage = () => {
   const { loginOrLogoutUser } = useUserContext();
-  const [loginUserMutation, { data, loading, error }] = useLoginUserMutation();
+  const [createUserMutation, { data, loading, error }] =
+    useCreateUserMutation();
 
   const router = useRouter();
 
   console.log(router.query);
 
-  const [loginData, setLoginData] = useState<LoginInput>({
+  const [registerData, setRegisterData] = useState<NewUserInput>({
     email: "",
+    name: "",
     password: "",
   });
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const { data } = await loginUserMutation({
+    const { data } = await createUserMutation({
       variables: {
-        loginInput: loginData,
+        newUserInput: registerData,
       },
       onError(error, clientOptions) {
-        alert(error.message);
+        console.log(error);
       },
     });
 
-    if (data?.loginUser) {
-      const { user, accessToken } = data?.loginUser;
-      loginOrLogoutUser(user);
-      alert(data?.loginUser);
-      const headers = {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      };
-      // set the headers for subsequent requests
-
-      router.push(FRONTEND_ROUTER.HOME);
+    if (data?.createUser) {
+      loginOrLogoutUser(data?.createUser);
+      alert(data?.createUser);
     }
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setLoginData((prevState) => ({ ...prevState, [name]: value }));
+    setRegisterData((prevState) => ({ ...prevState, [name]: value }));
   };
 
   const inputFields: InputField[] = [
     { name: "email", type: "email" },
+    { name: "name", type: "text" },
     { name: "password", type: "password" },
   ];
 
   return (
     <div>
-      <Link href={FRONTEND_ROUTER.HOME}>BACK HOME</Link>
-      <form onSubmit={handleLogin}>
+      <Link href={"/"}>BACK HOME</Link>
+      <form onSubmit={handleRegister}>
         {inputFields.map(({ name, type }) => (
           <div key={name}>
             <label>
@@ -71,15 +65,15 @@ const LoginPage = () => {
               <input
                 type={type}
                 name={name}
-                value={loginData[name]}
+                value={registerData[name]}
                 onChange={handleChange}
               />
             </label>
           </div>
         ))}
-        <button type="submit">Login</button>
+        <button type="submit">Sign up</button>
       </form>
-      <Link href={FRONTEND_ROUTER.REGISTER}>Register</Link>
+      <Link href={FRONTEND_ROUTER.LOGIN}>Go to login</Link>
     </div>
   );
 };

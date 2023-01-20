@@ -7,9 +7,12 @@ import {
   Field,
   ID,
   Authorized,
+  ObjectType,
 } from "type-graphql";
 import { User, UserModel } from "server/schemas/User.schema";
 import { DocumentType } from "@typegoose/typegoose";
+import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "constants/constants";
 
 export type UserWithoutPwd = Omit<User, "password" | "admin">;
 
@@ -35,6 +38,15 @@ export default function getCleanUser(user: DocumentType<User>): UserWithoutPwd {
   return rest;
 }
 
+@ObjectType()
+export class LoginResponse {
+  @Field(() => User)
+  user!: User;
+
+  @Field()
+  accessToken!: string;
+}
+
 @Resolver(User)
 export class UserResolver {
   /*   @Authorized()
@@ -44,14 +56,14 @@ export class UserResolver {
     return UserModel.find({});
   }
 */
-  @Query(() => User)
+  @Mutation(() => LoginResponse)
   async loginUser(
     @Arg("loginInput") loginInput: LoginInput
-  ): Promise<UserWithoutPwd> {
+  ): Promise<{ user: UserWithoutPwd; accessToken: string }> {
     const user = await UserModel.findOne({ email: loginInput.email }).select(
       "+password"
     );
-    const notFoundError = new Error("Invalid task ID");
+    const notFoundError = new Error("Password or email not correct.");
     if (!user) {
       throw notFoundError;
     }
@@ -61,8 +73,8 @@ export class UserResolver {
     if (user.password !== loginInput.password) {
       throw notFoundError;
     }
-
-    return getCleanUser(user);
+    var token = jwt.sign({ _id: user._id, admin: user.admin }, JWT_SECRET);
+    return { user: getCleanUser(user), accessToken: token };
   }
 
   //ERROR / createUser QUERY: I can query pwd and admin from client side even though I am not returning those fields

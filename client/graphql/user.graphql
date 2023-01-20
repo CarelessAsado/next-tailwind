@@ -8,12 +8,15 @@ mutation createUser($newUserInput: NewUserInput!) {
   }
 }
 
-query loginUser($loginInput: LoginInput!) {
+mutation loginUser($loginInput: LoginInput!) {
   loginUser(loginInput: $loginInput) {
-    name
-    email
-    _id
-    createdAt
-    updatedAt
+    user {
+      name
+      email
+      _id
+      createdAt
+      updatedAt
+    }
+    accessToken
   }
 }

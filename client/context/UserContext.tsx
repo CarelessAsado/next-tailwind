@@ -13,7 +13,11 @@ export const useUserContext = () => {
   return useContext(UserContext);
 };
 
-const UserContextProvider = ({ children }: { children: React.ReactNode }) => {
+export const UserContextProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [user, setUser] = useState<UserContextValue["user"]>(null);
 
   function loginOrLogoutUser(user: UserContextValue["user"] = null) {

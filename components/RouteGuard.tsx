@@ -10,16 +10,16 @@ const RouteGuard = ({ children }: ComponentProps) => {
   const { user } = useUserContext();
   const router = useRouter();
   const { pathname } = router;
-  /*   useEffect(() => {
+  useEffect(() => {
     if (!user && !unprotectedRoutes.includes(pathname)) {
       alert("pathname en route guard: " + pathname);
       router.push(FRONTEND_ROUTER.LOGIN, {
         pathname: FRONTEND_ROUTER.LOGIN,
         //see how to set "from" afterwards
-          query: { from: pathname }, 
+        query: { from: pathname },
       });
     }
-  }, [user, pathname]); */
+  }, [user, pathname]);
 
   return <>{children}</>;
 };

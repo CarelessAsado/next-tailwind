@@ -12,6 +12,7 @@ const verifyJwt = async ({
   try {
     // Get the access token
     let access_token = req.headers?.authorization;
+    console.log(req.headers);
     console.log("AUTH MIDDLEWARE EN APOLLO SERVER CONTEXT");
 
     /* if (
