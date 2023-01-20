@@ -1,4 +1,6 @@
 import { AuthenticationError } from "apollo-server-micro";
+import { JWT_SECRET } from "constants/constants";
+import { verify } from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ContextType } from "pages/api/graphql";
 
@@ -11,10 +13,13 @@ const verifyJwt = async ({
 }) => {
   try {
     // Get the access token
-    let access_token = req.headers?.authorization;
-    console.log(req.headers);
-    console.log("AUTH MIDDLEWARE EN APOLLO SERVER CONTEXT");
+    let access_token = req.headers?.auth;
 
+    console.log("AUTH MIDDLEWARE EN APOLLO SERVER CONTEXT");
+    if (!access_token || typeof access_token !== "string")
+      throw new AuthenticationError("No access token found");
+    const decoded = verify(access_token, JWT_SECRET);
+    console.log(decoded, 666);
     /* if (
       req.headers.authorization &&
       req.headers.authorization.startsWith("Bearer")
@@ -24,7 +29,7 @@ const verifyJwt = async ({
       access_token = getCookie("access_token", { req, res });
     } */
 
-    /* if (!access_token) throw new AuthenticationError("No access token found"); */
+    /*  */
 
     // Validate the Access token
     /*    const decoded = verifyJwt<{ userId: string }>(
@@ -35,10 +40,10 @@ const verifyJwt = async ({
     /* if (!decoded) throw new AuthenticationError("Invalid access token"); */
 
     // Check if user exist
-    const user: ContextType = {
-      name: "Rod hardcoded in context apollo auth",
+    /*    const user: ContextType = {
+      _id: "Rod hardcoded in context apollo auth",
       admin: true,
-    };
+    }; */
     /*     const user = await UserModel.findById(JSON.parse(session)._id)
       .select("+verified")
       .lean(true);
@@ -50,7 +55,7 @@ const verifyJwt = async ({
       );
     } */
 
-    return user;
+    return decoded;
   } catch (error: any) {
     console.log(error);
     throw error;

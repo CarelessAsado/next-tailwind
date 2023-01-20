@@ -7,7 +7,7 @@ import { TaskResolver } from "server/resolvers/tasks.resolvers";
 import verifyJwt from "server/middleware/auth";
 import { UserResolver } from "server/resolvers/user.resolvers";
 
-export type ContextType = { admin: boolean; name: string };
+export type ContextType = { admin: boolean; _id: string };
 
 export const customAuthChecker: AuthChecker<ContextType> = (
   { root, args, context, info },
@@ -27,7 +27,7 @@ const authMiddleWareTypeGraphql: MiddlewareFn<ContextType> = (
   next
 ) => {
   console.log(
-    `Logging access: ${context.name} -> ${info.parentType.name}.${info.fieldName}`
+    `Logging access: ${context._id} -> ${info.parentType.name}.${info.fieldName}`
   );
   console.log("CHECK IF IS THE FIRST OR LAST");
   return next();

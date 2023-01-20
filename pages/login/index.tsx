@@ -1,5 +1,6 @@
 import { useUserContext } from "client/context/UserContext";
 import { LoginInput, useLoginUserMutation } from "client/generated/graphql";
+import { setTokenLStorage } from "client/utils/localStorage";
 import { FRONTEND_ROUTER } from "constants/constants";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -38,7 +39,7 @@ const LoginPage = () => {
     if (data?.loginUser) {
       const { user, accessToken } = data?.loginUser;
       loginOrLogoutUser(user);
-
+      setTokenLStorage(accessToken);
       // set the headers for subsequent requests
 
       router.push(FRONTEND_ROUTER.HOME);
