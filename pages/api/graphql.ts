@@ -7,8 +7,6 @@ import { TaskResolver } from "server/resolvers/tasks.resolvers";
 import verifyJwt from "server/middleware/auth";
 import { UserResolver } from "server/resolvers/user.resolvers";
 
-export type ContextType = { admin: boolean; _id: string };
-
 export const customAuthChecker: AuthChecker<ContextType> = (
   { root, args, context, info },
   roles

@@ -73,7 +73,21 @@ export class UserResolver {
     if (user.password !== loginInput.password) {
       throw notFoundError;
     }
-    var token = jwt.sign({ _id: user._id, admin: user.admin }, JWT_SECRET);
+
+    const jwtPayload = { _id: user._id, admin: user.admin };
+
+    /* I try adding this in the verify part of the auth flow,BUUUUT puedo agregar otras keys y typescript no se queja( ver en la otra fn q hice type predicate guard y pareció andar)
+    function verifyContextWithTypescript(obj: any): obj is ContextType {
+  return (
+    "admin" in obj  && "_id" in obj
+  );
+} */
+
+    //en cambio con este control, ahora me garantizo q si le agrego algo a Context, aca salta el error CHEQUEADO ✅
+    function verifyContextWithTypescript(obj: ContextType) {
+      return obj;
+    }
+    var token = jwt.sign(verifyContextWithTypescript(jwtPayload), JWT_SECRET);
     return { user: getCleanUser(user), accessToken: token };
   }
 
