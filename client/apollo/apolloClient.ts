@@ -1,18 +1,25 @@
-import { ApolloClient, from, InMemoryCache } from "@apollo/client";
+import { ApolloClient, FetchResult, from, InMemoryCache } from "@apollo/client";
 import { BACKEND_ROUTER, BACKEND_URL_API } from "constants/constants";
 import { ApolloLink, HttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { LoginUserMutation } from "client/generated/graphql";
+
 const httpLink = new HttpLink({
   uri: BACKEND_URL_API + BACKEND_ROUTER.GRAPHQL,
   // Additional options
 });
-const authLink = new ApolloLink((operation, forward) => {
-  console.log(operation.getContext().blabla, 999);
-  alert(operation.getContext().headers.auth);
-  alert("we in the middleware" + JSON.stringify(forward));
-  //see how to correctly type context with headers / token / auth
 
-  operation.setContext((all: any) => {
+function isLoginUserMutation(obj: any): obj is LoginUserMutation {
+  return obj.loginUser !== undefined;
+}
+/*  REST OF THE INFO INSIDE APOLLO AUTHLINK
+  /* READ CONTEXT PASSED FROM ANOTHER LINK
+  alert(operation.getContext().blabla);
+  alert(operation.getContext().headers.auth); */
+//alert("we in the middleware" + JSON.stringify(forward));
+//see how to correctly type context with headers / token / auth
+
+/* operation.setContext((all: any) => {
     console.log(all, 666);
     return {
       headers: {
@@ -20,14 +27,33 @@ const authLink = new ApolloLink((operation, forward) => {
         ...all.headers,
       },
     };
+  }); */
+const authLink = new ApolloLink((operation, forward) => {
+  return forward(operation).map((response) => {
+    //its useless setting the context.headers on return from a specific operation because on the next operation that context is gone. I have to set it on the REQUEST
+    alert("BACK UP THE LINK CHAIN");
+    console.log(response);
+    if (isLoginUserMutation(response.data)) {
+      const { accessToken } = response.data.loginUser;
+      alert(accessToken);
+      operation.setContext((all: any) => {
+        console.log(all, 888);
+        return {
+          headers: {
+            /*  ...all.headers, */
+            auth: accessToken, // however you get your token
+          },
+        };
+      });
+    }
+
+    return response;
   });
-  if (forward) return forward(operation);
-  else return null;
 });
 
-//ESTO FUNCIONAAAAAAAAAAAAAAAAA, puedo pasar context
-const authLink2 = setContext((_, { headers }) => {
-  alert("2");
+//ESTO FUNCIONAAAAAAAAAAAAAAAAA, puedo pasar context de 2 maneras entonces
+/* const authLink2 = setContext((_, { headers }) => {
+  alert("FIRST LINK, set context");
   return {
     blabla: "holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     headers: {
@@ -35,13 +61,13 @@ const authLink2 = setContext((_, { headers }) => {
       auth: "RODRIGO",
     },
   };
-});
+}); */
 export const client = new ApolloClient({
   cache: new InMemoryCache(),
   /* I think that if I add a specific middleware link I need to add myself an HTTPLink which contains the uri
    uri: BACKEND_URL_API + BACKEND_ROUTER.GRAPHQL, */
   //see https://www.apollographql.com/docs/react/api/link/introduction/#your-first-link-chain
-  link: from([authLink2, authLink, httpLink]),
+  link: from([authLink, httpLink]),
 });
 
 /* const authLink2 = setContext((_, { headers }) => {

@@ -38,12 +38,7 @@ const LoginPage = () => {
     if (data?.loginUser) {
       const { user, accessToken } = data?.loginUser;
       loginOrLogoutUser(user);
-      alert(data?.loginUser);
-      const headers = {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      };
+
       // set the headers for subsequent requests
 
       router.push(FRONTEND_ROUTER.HOME);
