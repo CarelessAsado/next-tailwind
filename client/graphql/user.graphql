@@ -1,0 +1,26 @@
+mutation createUser($newUserInput: NewUserInput!) {
+  createUser(newUserINPUT: $newUserInput) {
+    name
+    email
+    _id
+    createdAt
+    updatedAt
+  }
+}
+
+mutation loginUser($loginInput: LoginInput!) {
+  loginUser(loginInput: $loginInput) {
+    user {
+      name
+      email
+      _id
+      createdAt
+      updatedAt
+    }
+    accessToken
+  }
+}
+
+mutation logout {
+  logoutUser
+}

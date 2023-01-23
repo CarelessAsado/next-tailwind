@@ -1,22 +1,34 @@
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
-import React, { useEffect } from "react";
 import { useState } from "react";
-import { ITaskObject } from "model/Task";
-import dbConnect from "utils/dbConnect";
-import { getAllTasks } from "../api/tasks.controller";
 import { SingleTask } from "components/SingleTask";
-import { BACKEND_URL_API, ROUTER } from "constants/constants";
 import Spinner from "components/Spinner";
+import {
+  Task,
+  useCreateTaskMutation,
+  useGetAllTasksQuery,
+} from "client/generated/graphql";
+import LogOutBtn from "components/LogOutBtn";
 
 type PageProps = {
-  serverData: ITaskObject[];
+  serverData: Task[];
   submitForm?: Function;
 };
 
 const Form = ({ serverData, submitForm }: PageProps) => {
   const [loading, setLoading] = useState(false);
 
+  //comes as undefined at first, it console.logs on client AND SERVER the "undefined"
+  //then when data actually arrives it only logs on client
+  const { data: dataQuery } = useGetAllTasksQuery({
+    onCompleted(data) {
+      setQueryData(data.tasks);
+    },
+  });
+
+  console.log(dataQuery, 999, "DID USEGETALLTASKSQUERY SUCCEEDED?");
+  const [createTaskMutation, { data, error }] = useCreateTaskMutation();
+  const [queryData, setQueryData] = useState<Task[]>([]);
   const [formState, setFormState] = useState({
     name: "",
     email: "",
@@ -37,21 +49,36 @@ const Form = ({ serverData, submitForm }: PageProps) => {
     try {
       //JEST TEST
       await submitForm?.();
-      //switch to axios
-      const resp = await fetch(BACKEND_URL_API + ROUTER.tasksControllerAPI, {
-        body: JSON.stringify(formState),
-        method: "POST",
-      });
 
-      const value = await resp.json();
+      const resp = await createTaskMutation({
+        variables: {
+          newTaskINPUT: { value: formState.name },
+        },
+      });
+      const created = resp.data?.createTask;
+      if (created) {
+        setQueryData((v) => [...v, created]);
+      }
+
+      console.log(resp, 111);
     } catch (error) {
+      console.log(JSON.stringify(error));
       console.log(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const [data, setData] = useState<ITaskObject[]>(serverData);
+  const handleDelete = (id: string) => {
+    setQueryData((state) => state.filter((task) => task._id !== id));
+  };
+  const handleUpdateState = (updatedTask: Task) => {
+    setQueryData((state) =>
+      state.map((task) => (task._id === updatedTask._id ? updatedTask : task))
+    );
+  };
+
+  /*   const [data, setData] = useState<ITaskObject[]>(serverData); */
 
   return (
     <>
@@ -124,9 +151,17 @@ const Form = ({ serverData, submitForm }: PageProps) => {
           {loading ? <Spinner fz="1 rem" /> : "Enviar"}
         </button>
       </form>
-
-      {data.map((task) => {
-        return <SingleTask task={task} key={task._id} />;
+      <b> {!!error && error.message}</b>
+      <LogOutBtn />
+      {queryData?.map((task) => {
+        return (
+          <SingleTask
+            task={task}
+            key={task._id}
+            handleDeleteState={handleDelete}
+            handleUpdateState={handleUpdateState}
+          />
+        );
       })}
     </>
   );
@@ -134,17 +169,17 @@ const Form = ({ serverData, submitForm }: PageProps) => {
 
 //dont fetch your local API inside your getServerSideProps, its like calling your own house from chez toi
 //getServerSideProps is called only on first mount
-export async function getServerSideProps() {
+/* export async function getServerSideProps() {
   await dbConnect();
   const tasks = await getAllTasks();
   //if I dont serialize the mongoose object, Next will throw an error
 
   //TO OBJECT: method does not recursively convert all nested documents and arrays to plain objects. If you have nested documents or arrays that you need to convert to plain objects, you may need to use additional logic to traverse and convert those nested objects as needed (_id property its an object, so it will throw an Error in next with just this method).
-  /*   const serializableTasks = tasks.map((task) => task.toObject<ITask>()); */
+  //   const serializableTasks = tasks.map((task) => task.toObject<ITask>()); 
   const serializableTasks = JSON.parse(JSON.stringify(tasks));
 
   const _props: PageProps = { serverData: serializableTasks };
-  console.log("getSERVER SIDE PROPS CALLED", serializableTasks);
+  console.log("getSERVER SIDE PROPS CALLED", serializableTasks.length);
   return { props: _props };
-}
+} */
 export default Form;

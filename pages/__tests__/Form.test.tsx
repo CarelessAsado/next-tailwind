@@ -1,7 +1,12 @@
 import React from "react";
 import { render, fireEvent, waitFor, getByRole } from "@testing-library/react";
 import Form from "pages/form/index";
-import { BACKEND_URL_API, ROUTER } from "constants/constants";
+import { MockedProvider, MockedResponse } from "@apollo/react-testing";
+import {
+  GetAllTasksDocument,
+  GetAllTasksQuery,
+} from "client/generated/graphql";
+import { ApolloMockProviderReusable } from "./ApolloMockProvider";
 
 const inputs = [
   { label: "Full Name", value: "John Smith" },
@@ -13,7 +18,11 @@ const inputLabels = inputs.map((inp) => inp.label);
 
 describe("Form", () => {
   it("should render the form", () => {
-    const { getByLabelText } = render(<Form serverData={[]} />);
+    const { getByLabelText } = render(
+      <ApolloMockProviderReusable>
+        <Form serverData={[]} />
+      </ApolloMockProviderReusable>
+    );
 
     inputLabels.forEach((label) => {
       expect(getByLabelText(label)).toBeDefined();
@@ -21,7 +30,11 @@ describe("Form", () => {
   });
 
   it("should update the form state when the inputs are changed", () => {
-    const { getByLabelText } = render(<Form serverData={[]} />);
+    const { getByLabelText } = render(
+      <ApolloMockProviderReusable>
+        <Form serverData={[]} />
+      </ApolloMockProviderReusable>
+    );
 
     inputs.forEach((input) => {
       const element = getByLabelText(input.label);
@@ -41,7 +54,9 @@ describe("Form", () => {
     });
 
     const { getByRole, findByTestId } = render(
-      <Form serverData={[]} submitForm={mockSubmit} />
+      <ApolloMockProviderReusable>
+        <Form serverData={[]} submitForm={mockSubmit} />
+      </ApolloMockProviderReusable>
     );
 
     const submitButton = getByRole("button");

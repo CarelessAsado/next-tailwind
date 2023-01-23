@@ -23,6 +23,7 @@ if (!cached) {
 
 async function dbConnect() {
   if (cached.conn) {
+    console.log("Mongo already connected, lets return");
     return cached.conn;
   }
 
@@ -40,6 +41,7 @@ async function dbConnect() {
   try {
     cached.conn = await cached.promise;
   } catch (e) {
+    console.log(e);
     cached.promise = null;
     throw e;
   }

@@ -1,10 +1,11 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import Task, { ITask } from "model/Task";
-import dbConnect from "utils/dbConnect";
+/* import Task, { ITask } from "model/Task"; */
+import dbConnect from "server/db/dbConnect";
+import { TaskModel } from "server/schemas/Task.schema";
 
 export const getAllTasks = async () => {
-  return Task.find<ITask>();
+  return TaskModel.find();
 };
 
 // https://nextjs.org/docs/api-routes/introduction
@@ -27,7 +28,7 @@ export default async function handler(
     case "POST":
       console.log("estamos en POST");
       console.log(req.body);
-      const savedTask = await new Task({
+      const savedTask = await new TaskModel({
         value: JSON.parse(req.body).name,
       }).save();
       res.status(201).json(savedTask);
@@ -35,10 +36,11 @@ export default async function handler(
     case "PUT":
       console.log(req.body);
       const { value, checked, _id } = req.body;
-      const found = await Task.findById<ITask>(_id);
+      const found = await TaskModel.findById(_id);
       if (!found) {
         return res.status(404);
       }
+
       found.value = value;
       found.checked = checked;
 
