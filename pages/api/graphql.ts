@@ -12,7 +12,7 @@ export const customAuthChecker: AuthChecker<ContextType> = (
   roles
 ) => {
   console.log("CUSTOM AUTH CHECKER TRIGGERED BY @Aytgebtucated");
-  console.log(context, 666);
+  console.log(context?.admin, 666);
   console.log({ context, info: info.path, roles });
   // here we can read the user from context
   // and check his permission in the db against the `roles` argument that comes from the `@Authorized` decorator, eg. ["ADMIN", "MODERATOR"]

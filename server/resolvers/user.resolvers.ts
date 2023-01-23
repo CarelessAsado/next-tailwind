@@ -8,6 +8,7 @@ import {
   ID,
   Authorized,
   ObjectType,
+  Ctx,
 } from "type-graphql";
 import { User, UserModel } from "server/schemas/User.schema";
 import { DocumentType } from "@typegoose/typegoose";
@@ -89,6 +90,30 @@ export class UserResolver {
     }
     var token = jwt.sign(verifyContextWithTypescript(jwtPayload), JWT_SECRET);
     return { user: getCleanUser(user), accessToken: token };
+  }
+
+  @Authorized()
+  @Mutation(() => Boolean)
+  async logoutUser(
+    @Ctx() ctx: ContextType
+    /* @Arg("loginInput") loginInput: LoginInput */
+  ): Promise<boolean> {
+    const user = true;
+    /*  const user = await UserModel.findOne({ email: loginInput.email }).select(
+      "+password"
+    ); */
+
+    //PROBA INVERTIR EL ORDEN DE CTX
+    console.log(
+      ctx,
+      "REVERSE THE TYPEGRAPHQL ARGS ORDER, see if it works still"
+    );
+    const notFoundError = new Error("Password or email not correct.");
+    if (!user) {
+      throw notFoundError;
+    }
+
+    return true;
   }
 
   //ERROR / createUser QUERY: I can query pwd and admin from client side even though I am not returning those fields

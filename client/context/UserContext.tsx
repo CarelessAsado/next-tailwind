@@ -6,7 +6,7 @@ const UserContext = React.createContext({} as UserContextValue);
 
 interface UserContextValue {
   user: UserWithoutPwd | null;
-  loginOrLogoutUser: (user: UserContextValue["user"]) => void;
+  loginOrLogoutUser: (user?: UserContextValue["user"]) => void;
 }
 
 export const useUserContext = () => {

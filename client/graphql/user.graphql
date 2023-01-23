@@ -20,3 +20,7 @@ mutation loginUser($loginInput: LoginInput!) {
     accessToken
   }
 }
+
+mutation logout {
+  logoutUser
+}

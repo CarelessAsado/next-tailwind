@@ -8,6 +8,7 @@ import {
   useCreateTaskMutation,
   useGetAllTasksQuery,
 } from "client/generated/graphql";
+import LogOutBtn from "components/LogOutBtn";
 
 type PageProps = {
   serverData: Task[];
@@ -151,6 +152,7 @@ const Form = ({ serverData, submitForm }: PageProps) => {
         </button>
       </form>
       <b> {!!error && error.message}</b>
+      <LogOutBtn />
       {queryData?.map((task) => {
         return (
           <SingleTask
